@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x] # Specify Node.js versions to test against
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm' # Or 'yarn' if the project uses Yarn
+
+    - name: Install dependencies
+      run: npm install # Or yarn install
+
+    # Add linting step if a linter is set up
+    # - name: Lint
+    #   run: npm run lint # Or your specific lint command
+
+    # Add testing step if tests are set up
+    # - name: Test
+    #   run: npm test # Or your specific test command
