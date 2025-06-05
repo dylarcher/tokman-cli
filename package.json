@@ -1,0 +1,37 @@
+{
+  "name": "tokman-cli",
+  "version": "0.1.0",
+  "description": "A library intended to generate design tokens from a style source",
+  "main": "src/index.js",
+  "bin": {
+    "tokman-cli": "src/cli.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+  },
+  "keywords": [
+    "design-tokens",
+    "cli",
+    "tokens",
+    "style-management"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/USERNAME/REPOSITORY.git"
+  },
+  "bugs": {
+    "url": "https://github.com/USERNAME/REPOSITORY/issues"
+  },
+  "homepage": "https://github.com/USERNAME/REPOSITORY#readme",
+  "dependencies": {
+    "axios": "^1.0.0",
+    "commander": "^10.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0"
+  }
+}
