@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide: Building a Design Token Library</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Teal/Blue Accents -->
+    <!-- Application Structure Plan: A top-to-bottom exploratory journey designed to guide a developer or designer through the key concepts and decisions of building a design token library. It starts with the "Why" (intro to tokens), moves to the "How" (interactive architecture), then a critical decision point ("From Where" - input sources), followed by the practical application ("What it Becomes" - token design) and end result ("What You Get" - output formats), and concludes with actionable advice ("Build it Right"). This task-oriented flow, supported by interactive components like a clickable diagram, a source comparator with a radar chart, a token naming tool, and a code showcase, was chosen to make the dense report content more engaging, understandable, and memorable than a linear text presentation. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: Library Architecture (Sec 2.2). Goal: Organize/Explain. Viz/Method: Clickable HTML/Tailwind Diagram with Modals. Interaction: Click a module to see its details. Justification: Transforms a static diagram into an interactive exploration tool, promoting progressive disclosure of information and reducing cognitive load. Method: HTML/JS.
+        - Report Info: Input Source Comparison (Sec 3.4). Goal: Compare. Viz/Method: Tabs + Radar Chart. Interaction: Select a source to see its stats visualized. Justification: A radar chart offers a powerful, at-a-glance comparison across multiple attributes (granularity, richness, etc.), which is more effective for decision-making than a static table. Library: Chart.js.
+        - Report Info: Token Naming Conventions (Sec 5.2). Goal: Inform/Engage. Viz/Method: Interactive "Token Namer" tool with dropdowns. Interaction: Select parts of a token name to see it constructed. Justification: Turns a descriptive section into a hands-on tool, reinforcing the naming structure through action. Method: HTML/JS.
+        - Report Info: Output Formats (Sec 7.1). Goal: Inform/Compare. Viz/Method: Tabs + Dynamic Code Blocks. Interaction: Select a format to see a code example. Justification: Makes the abstract concept of different outputs concrete and immediately understandable for the developer audience. Method: HTML/JS.
+        - Report Info: Best Practices (Sec 8). Goal: Inform. Viz/Method: Interactive checklist. Interaction: Click to check items. Justification: A simple engagement mechanic to make a list more interactive and less passive. Method: HTML/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #3d3d3d;
+        }
+
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+        }
+
+        .nav-link.active,
+        .nav-link:hover {
+            color: #00796b;
+            border-bottom-color: #00796b;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        .tab.active {
+            background-color: #00796b;
+            color: #ffffff;
+        }
+
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            max-height: 400px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .diagram-node {
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .diagram-node:hover {
+            transform: scale(1.05);
+            background-color: #e0f2f1;
+        }
+
+        .checklist-item.checked {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+
+        .checklist-item.checked .checkbox {
+            background-color: #00796b;
+            border-color: #00796b;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl font-bold text-gray-800">Design Token Library Guide</h1>
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="#intro" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Intro</a>
+                    <a href="#architecture"
+                        class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Architecture</a>
+                    <a href="#inputs" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Inputs</a>
+                    <a href="#design" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Design</a>
+                    <a href="#outputs" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Outputs</a>
+                    <a href="#practices" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Practices</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- Section 1: Introduction to Design Tokens -->
+        <section id="intro" class="mb-24 text-center">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">The "Why": Understanding Design Tokens</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-12">This section introduces the foundational concepts
+                of design tokens. You'll learn what they are, the significant benefits they bring to a project, and the
+                common types of visual properties they represent. This is the starting point for building a scalable and
+                consistent design system.</p>
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="card p-8 text-left">
+                    <h3 class="text-2xl font-semibold mb-4">What are Design Tokens?</h3>
+                    <p class="text-gray-600">Design tokens are the single source of truth for a design system's visual
+                        style. They are named entities that store design decisions—like colors, fonts, or
+                        spacing—instead of hard-coded values. For example, instead of using `#007BFF`, you'd use a token
+                        like `color-action-primary`. If the brand color changes, you only update the token, and the
+                        change propagates everywhere.</p>
+                </div>
+                <div class="card p-8 text-left">
+                    <h3 class="text-2xl font-semibold mb-4">Core Benefits</h3>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start"><span class="text-teal-600 font-bold mr-2">&#10003;</span>
+                            <strong>Consistency:</strong> Ensures a uniform visual appearance across all platforms (web,
+                            iOS, Android).</li>
+                        <li class="flex items-start"><span class="text-teal-600 font-bold mr-2">&#10003;</span>
+                            <strong>Efficiency:</strong> Drastically simplifies maintenance. Update a style once, and it
+                            changes everywhere.</li>
+                        <li class="flex items-start"><span class="text-teal-600 font-bold mr-2">&#10003;</span>
+                            <strong>Collaboration:</strong> Creates a shared language between designers and developers.
+                        </li>
+                        <li class="flex items-start"><span class="text-teal-600 font-bold mr-2">&#10003;</span>
+                            <strong>Scalability:</strong> Provides a robust framework that supports product growth
+                            without losing visual coherence.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Library Architecture -->
+        <section id="architecture" class="mb-24">
+            <h2 class="text-4xl font-bold text-gray-900 text-center mb-4">The "How": Library Architecture Explorer</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 text-center mb-12">A well-designed token library functions
+                as a pipeline. This interactive diagram visualizes the core modules and the flow of data from raw input
+                to consumable output. Click on any module to learn more about its specific role and the key technologies
+                involved in its implementation.</p>
+            <div class="card p-8">
+                <div id="architecture-diagram" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="diagram-node bg-teal-50 border border-teal-200 p-4 rounded-lg"
+                            data-modal="modal-input"><strong>Input Adapters</strong>
+                            <div class="text-sm text-gray-500">(CSS, Figma, Miro)</div>
+                        </div>
+                        <div class="hidden md:flex items-center justify-center text-3xl text-gray-400">&rarr;</div>
+                        <div class="diagram-node bg-blue-50 border border-blue-200 p-4 rounded-lg"
+                            data-modal="modal-parser"><strong>Parsing Engine</strong>
+                            <div class="text-sm text-gray-500">(Data to AST/Object)</div>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-center justify-center text-3xl text-gray-400 md:transform md:rotate-90 md:my-[-1rem]">
+                        &darr;</div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="diagram-node bg-indigo-50 border border-indigo-200 p-4 rounded-lg"
+                            data-modal="modal-formatter"><strong>Output Formatters</strong>
+                            <div class="text-sm text-gray-500">(JSON, CSS, etc.)</div>
+                        </div>
+                        <div class="hidden md:flex items-center justify-center text-3xl text-gray-400">&larr;</div>
+                        <div class="diagram-node bg-purple-50 border border-purple-200 p-4 rounded-lg"
+                            data-modal="modal-transformer"><strong>Transformation Engine</strong>
+                            <div class="text-sm text-gray-500">(Normalize & Unify)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-8 diagram-node bg-gray-100 border border-gray-300 p-4 rounded-lg max-w-sm mx-auto"
+                    data-modal="modal-config">
+                    <h4 class="font-semibold">Configuration Manager & CLI/API Layer</h4>
+                    <p class="text-sm text-gray-600">Orchestrates the entire process based on user settings.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Input Sources -->
+        <section id="inputs" class="mb-24">
+            <h2 class="text-4xl font-bold text-gray-900 text-center mb-4">The "From Where": Input Source Comparator</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 text-center mb-12">The quality of your design tokens
+                depends heavily on the source. Not all inputs are created equal. Use this comparator to understand the
+                pros, cons, and characteristics of each potential source. Select a source to see its analysis and visual
+                rating chart.</p>
+            <div class="flex justify-center mb-8 border-b border-gray-200">
+                <button
+                    class="tab py-2 px-4 -mb-px text-lg font-medium text-gray-500 hover:text-teal-700 transition-colors duration-300"
+                    data-source="figma">Figma</button>
+                <button
+                    class="tab py-2 px-4 -mb-px text-lg font-medium text-gray-500 hover:text-teal-700 transition-colors duration-300"
+                    data-source="css">CSS</button>
+                <button
+                    class="tab py-2 px-4 -mb-px text-lg font-medium text-gray-500 hover:text-teal-700 transition-colors duration-300"
+                    data-source="miro">Miro</button>
+            </div>
+            <div id="source-content" class="grid lg:grid-cols-2 gap-12 items-center">
+                <div id="source-text-content">
+                    <!-- Dynamic content will be injected here -->
+                </div>
+                <div class="chart-container">
+                    <canvas id="sourceRadarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Design Token System -->
+        <section id="design" class="mb-24">
+            <h2 class="text-4xl font-bold text-gray-900 text-center mb-4">The "What It Becomes": Token System Designer
+            </h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 text-center mb-12">Once data is extracted, it must be
+                organized into a coherent system. This involves a clear naming convention and a logical hierarchy. Use
+                the tools below to understand how raw values are transformed into a structured, semantic system that is
+                easy for developers to use.</p>
+            <div class="grid lg:grid-cols-2 gap-8">
+                <div class="card p-8">
+                    <h3 class="text-2xl font-semibold mb-4">Interactive Token Namer</h3>
+                    <p class="text-gray-600 mb-6">Build a token name using the CTI (Category-Type-Item) convention to
+                        see how a structured name communicates a token's purpose.</p>
+                    <div class="space-y-4">
+                        <select id="token-cat" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="color">color</option>
+                            <option value="font">font</option>
+                            <option value="spacing">spacing</option>
+                        </select>
+                        <select id="token-type" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="background">background</option>
+                            <option value="text">text</option>
+                            <option value="border">border</option>
+                        </select>
+                        <select id="token-item" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="button">button</option>
+                            <option value="input">input</option>
+                            <option value="card">card</option>
+                        </select>
+                        <div class="bg-gray-100 p-4 rounded-md text-center">
+                            <p class="text-gray-500">Generated Token Name:</p>
+                            <p id="generated-token-name" class="font-mono text-lg text-teal-700 font-semibold"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card p-8">
+                    <h3 class="text-2xl font-semibold mb-4">Token Hierarchy</h3>
+                    <p class="text-gray-600 mb-6">A tiered hierarchy separates raw values from their semantic purpose,
+                        making the system flexible and maintainable.</p>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-red-50 border-l-4 border-red-400 rounded-r-md">
+                            <h4 class="font-bold">1. Primitive Tokens</h4>
+                            <p class="text-sm text-gray-600">Raw, context-agnostic values from your palette.</p>
+                            <code class="text-sm font-mono text-red-700">color-blue-500: #007BFF;</code>
+                        </div>
+                        <div class="text-2xl ml-4">&darr;</div>
+                        <div class="p-3 bg-green-50 border-l-4 border-green-400 rounded-r-md">
+                            <h4 class="font-bold">2. Semantic Tokens</h4>
+                            <p class="text-sm text-gray-600">Give purpose to primitives by creating an alias.</p>
+                            <code
+                                class="text-sm font-mono text-green-700">color-text-interactive: {color-blue-500};</code>
+                        </div>
+                        <div class="text-2xl ml-4">&darr;</div>
+                        <div class="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-md">
+                            <h4 class="font-bold">3. Component Tokens (Optional)</h4>
+                            <p class="text-sm text-gray-600">Scope tokens to a specific component for overrides.</p>
+                            <code
+                                class="text-sm font-mono text-yellow-700">button-primary-text-color: {color-text-interactive};</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Output Formats -->
+        <section id="outputs" class="mb-24">
+            <h2 class="text-4xl font-bold text-gray-900 text-center mb-4">The "What You Get": Output Formatter Showcase
+            </h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 text-center mb-12">The final step is to generate files
+                that developers can use. The library must serialize the unified tokens into various formats for
+                different platforms. Select a format below to see an example of the final output file.</p>
+            <div class="card p-2 md:p-4">
+                <div class="flex flex-wrap border-b border-gray-200">
+                    <button class="output-tab px-4 py-2 text-sm md:text-base font-medium" data-format="json">JSON
+                        (DTCG)</button>
+                    <button class="output-tab px-4 py-2 text-sm md:text-base font-medium" data-format="css">CSS Custom
+                        Properties</button>
+                    <button class="output-tab px-4 py-2 text-sm md:text-base font-medium"
+                        data-format="scss">SCSS</button>
+                    <button class="output-tab px-4 py-2 text-sm md:text-base font-medium" data-format="js">JavaScript
+                        (ESM)</button>
+                    <button class="output-tab px-4 py-2 text-sm md:text-base font-medium" data-format="android">Android
+                        (XML)</button>
+                </div>
+                <div class="bg-gray-800 rounded-b-lg p-4 overflow-x-auto">
+                    <pre><code id="output-code-block" class="language-json text-white text-sm"></code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Best Practices -->
+        <section id="practices" class="mb-24">
+            <h2 class="text-4xl font-bold text-gray-900 text-center mb-4">The "Build It Right": Developer Best Practices
+            </h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 text-center mb-12">Building a Node.js library for other
+                developers requires discipline. Following best practices ensures your tool is reliable, maintainable,
+                and easy to use. Use this checklist to guide your development process.</p>
+            <div class="max-w-2xl mx-auto card p-8">
+                <ul id="checklist" class="space-y-4">
+                    <li class="checklist-item flex items-center cursor-pointer">
+                        <div
+                            class="checkbox w-6 h-6 mr-4 border-2 border-gray-300 rounded flex items-center justify-center transition-colors">
+                            <span class="text-white text-lg">&#10003;</span>
+                        </div>
+                        <span class="flex-1">Use a modular project structure (e.g., /src, /parsers, /formatters).</span>
+                    </li>
+                    <li class="checklist-item flex items-center cursor-pointer">
+                        <div
+                            class="checkbox w-6 h-6 mr-4 border-2 border-gray-300 rounded flex items-center justify-center transition-colors">
+                            <span class="text-white text-lg">&#10003;</span>
+                        </div>
+                        <span class="flex-1">Manage `dependencies` vs. `devDependencies` correctly in
+                            `package.json`.</span>
+                    </li>
+                    <li class="checklist-item flex items-center cursor-pointer">
+                        <div
+                            class="checkbox w-6 h-6 mr-4 border-2 border-gray-300 rounded flex items-center justify-center transition-colors">
+                            <span class="text-white text-lg">&#10003;</span>
+                        </div>
+                        <span class="flex-1">Handle all async operations with `async/await` and robust `try...catch`
+                            blocks.</span>
+                    </li>
+                    <li class="checklist-item flex items-center cursor-pointer">
+                        <div
+                            class="checkbox w-6 h-6 mr-4 border-2 border-gray-300 rounded flex items-center justify-center transition-colors">
+                            <span class="text-white text-lg">&#10003;</span>
+                        </div>
+                        <span class="flex-1">Implement comprehensive unit and integration tests (e.g., with
+                            Jest).</span>
+                    </li>
+                    <li class="checklist-item flex items-center cursor-pointer">
+                        <div
+                            class="checkbox w-6 h-6 mr-4 border-2 border-gray-300 rounded flex items-center justify-center transition-colors">
+                            <span class="text-white text-lg">&#10003;</span>
+                        </div>
+                        <span class="flex-1">Provide clear API documentation (JSDoc/TSDoc) and a thorough README.</span>
+                    </li>
+                    <li class="checklist-item flex items-center cursor-pointer">
+                        <div
+                            class="checkbox w-6 h-6 mr-4 border-2 border-gray-300 rounded flex items-center justify-center transition-colors">
+                            <span class="text-white text-lg">&#10003;</span>
+                        </div>
+                        <span class="flex-1">Use Semantic Versioning (SemVer) to communicate changes.</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+            <p>This interactive guide provides a high-level overview of building a design token library.</p>
+            <p class="text-sm text-gray-400 mt-2">Analyzed and visualized from a source report.</p>
+        </div>
+    </footer>
+
+    <!-- Modals for Architecture Diagram -->
+    <div id="modal-input" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-md w-full" data-modal-target="modal-input">
+            <h3 class="text-2xl font-bold mb-4">Input Adapters</h3>
+            <p class="text-gray-600 mb-4">These modules are responsible for fetching and pre-processing raw styling data
+                from various sources. Each source (Figma, CSS, etc.) needs its own dedicated adapter to handle its
+                specific API or file format.</p>
+            <h4 class="font-semibold mb-2">Key Technologies:</h4>
+            <ul class="list-disc list-inside text-gray-600">
+                <li><strong>API Interaction:</strong> Axios, Node-fetch</li>
+                <li><strong>Figma:</strong> `@figma/rest-api-spec` for TypeScript types</li>
+            </ul>
+        </div>
+    </div>
+    <div id="modal-parser" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-md w-full" data-modal-target="modal-parser">
+            <h3 class="text-2xl font-bold mb-4">Parsing Engine</h3>
+            <p class="text-gray-600 mb-4">The parser takes the raw data from an adapter and transforms it into a
+                structured format, like an Abstract Syntax Tree (AST). This creates a standardized representation that
+                the Transformation Engine can understand, regardless of the original source.</p>
+            <h4 class="font-semibold mb-2">Key Technologies:</h4>
+            <ul class="list-disc list-inside text-gray-600">
+                <li><strong>CSS Parsing:</strong> CSSTree (AST-based), PostCSS</li>
+            </ul>
+        </div>
+    </div>
+    <div id="modal-transformer" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-md w-full"
+            data-modal-target="modal-transformer">
+            <h3 class="text-2xl font-bold mb-4">Transformation Engine</h3>
+            <p class="text-gray-600 mb-4">This is the core of the library. It takes the parsed data, applies naming
+                conventions, resolves aliases (e.g., semantic tokens referencing primitive tokens), normalizes values
+                (like converting colors to a consistent format), and generates a unified set of design tokens.</p>
+            <h4 class="font-semibold mb-2">Key Technologies:</h4>
+            <ul class="list-disc list-inside text-gray-600">
+                <li><strong>Inspiration:</strong> Style Dictionary architecture</li>
+                <li><strong>Validation:</strong> JSON Schema</li>
+            </ul>
+        </div>
+    </div>
+    <div id="modal-formatter" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-md w-full"
+            data-modal-target="modal-formatter">
+            <h3 class="text-2xl font-bold mb-4">Output Formatters</h3>
+            <p class="text-gray-600 mb-4">These modules take the unified internal token representation and serialize it
+                into various file formats consumable by different platforms (e.g., JSON, SCSS, CSS Custom Properties,
+                Android XML, iOS Swift).</p>
+            <h4 class="font-semibold mb-2">Key Formats:</h4>
+            <ul class="list-disc list-inside text-gray-600">
+                <li>JSON (DTCG Compliant)</li>
+                <li>CSS/SCSS Variables</li>
+                <li>JS/TS Modules</li>
+                <li>Android XML & iOS Swift</li>
+            </ul>
+        </div>
+    </div>
+    <div id="modal-config" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg shadow-2xl p-8 max-w-md w-full" data-modal-target="modal-config">
+            <h3 class="text-2xl font-bold mb-4">Orchestration Layer</h3>
+            <p class="text-gray-600 mb-4">This layer ties everything together. The <strong>Configuration
+                    Manager</strong> handles all user-defined settings (API keys, file paths, output choices). The
+                <strong>CLI / API Layer</strong> provides the interface for users to run the library, either from the
+                command line or programmatically within their own projects.</p>
+            <h4 class="font-semibold mb-2">Key Technologies:</h4>
+            <ul class="list-disc list-inside text-gray-600">
+                <li><strong>CLI:</strong> Commander.js, Yargs</li>
+                <li><strong>General:</strong> TypeScript, Jest (Testing)</li>
+            </ul>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Data for the application
+            const sourceData = {
+                figma: {
+                    title: 'Figma: The Preferred Source',
+                    description: 'Figma is a rich, dedicated design tool. Its modern "Variables" system is the highest-priority source because it provides explicit, granular, and semantically rich data that maps almost directly to design token concepts, including support for themes via "modes".',
+                    pros: [
+                        'Very high explicitness and granularity with Variables.',
+                        'Native support for theming (modes) and aliasing.',
+                        'Provides rich semantic data through naming conventions.'
+                    ],
+                    cons: [
+                        'Older "Styles" system requires more complex parsing.',
+                        'Requires API access and understanding the Figma document structure.'
+                    ],
+                    ratings: [5, 5, 5, 4, 5], // Explicitness, Granularity, Semantic Richness, Ease of Parsing, Mode Support
+                    priority: 'Highest'
+                },
+                css: {
+                    title: 'CSS: The Developer\'s Source',
+                    description: 'CSS files are a direct source of styling. Well-structured CSS using Custom Properties (`--var-name`) can serve as explicit design tokens. However, inferring tokens from standard CSS rules (`p { color: #333; }`) is complex and ambiguous.',
+                    pros: [
+                        'Custom Properties are explicit and easy to parse.',
+                        'Directly represents web styling.',
+                        'Good tooling support with parsers like CSSTree.'
+                    ],
+                    cons: [
+                        'Inferring tokens from standard rules is very difficult.',
+                        'Lacks native theme/mode support (relies on media queries).',
+                        'Semantic richness depends entirely on developer discipline.'
+                    ],
+                    ratings: [4, 4, 3, 4, 2],
+                    priority: 'High'
+                },
+                miro: {
+                    title: 'Miro: The Ideation Source',
+                    description: 'Miro is a collaborative whiteboarding tool, not a design specification tool. While its API allows access to basic style properties of items (shapes, text), it lacks the structure and semantic richness of Figma. It is best used for extracting high-level palettes from early ideation boards.',
+                    pros: [
+                        'Useful for extracting basic styles from early-stage concepts.',
+                        'API provides access to simple properties like fill color.'
+                    ],
+                    cons: [
+                        'Very low semantic richness and explicitness.',
+                        'No concept of named styles, variables, or themes.',
+                        'Limited granularity; tokens must be inferred from individual items.'
+                    ],
+                    ratings: [2, 3, 2, 4, 1],
+                    priority: 'Low'
+                }
+            }
+
+            const outputFormats = {
+                json: {
+                    language: 'json',
+                    code: `{
+  "color": {
+    "brand": {
+      "primary": {
+        "$value": "#007BFF",
+        "$type": "color",
+        "$description": "Primary brand color for interactive elements."
+      }
+    }
+  },
+  "font": {
+    "size": {
+      "large": {
+        "$value": "20px",
+        "$type": "dimension"
+      }
+    }
+  }
+}`
+                },
+                css: {
+                    language: 'css',
+                    code: `:root {
+  --color-brand-primary: #007BFF;
+  --font-size-large: 20px;
+}`
+                },
+                scss: {
+                    language: 'scss',
+                    code: `// SCSS Variables
+$color-brand-primary: #007BFF;
+$font-size-large: 20px;
+
+// SCSS Map for programmatic access
+$tokens: (
+  color: (
+    brand: (
+      primary: $color-brand-primary
+    )
+  ),
+  font: (
+    size: (
+      large: $font-size-large
+    )
+  )
+);`
+                },
+                js: {
+                    language: 'javascript',
+                    code: `export const colorBrandPrimary = "#007BFF";
+export const fontSizeLarge = "20px";
+
+export const tokens = {
+  color: {
+    brand: {
+      primary: "#007BFF"
+    }
+  },
+  font: {
+    size: {
+      large: "20px"
+    }
+  }
+};`
+                },
+                android: {
+                    language: 'xml',
+                    code: `<!-- colors.xml -->
+<resources>
+    <color name="color_brand_primary">#FF007BFF</color>
+</resources>
+
+<!-- dimens.xml -->
+<resources>
+    <dimen name="font_size_large">20sp</dimen>
+</resources>
+`
+                }
+            }
+
+            // Navigation
+            const navLinks = document.querySelectorAll('.nav-link')
+            const sections = document.querySelectorAll('main section')
+            window.addEventListener('scroll', () => {
+                let current = ''
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id')
+                    }
+                })
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href').slice(1) === current)
+                })
+            })
+
+            // Architecture Diagram Modals
+            const diagramNodes = document.querySelectorAll('.diagram-node')
+            diagramNodes.forEach(node => {
+                node.addEventListener('click', () => {
+                    const modalId = node.dataset.modal
+                    document.getElementById(modalId).classList.remove('hidden')
+                    document.getElementById(modalId).classList.add('flex')
+                })
+            })
+
+            document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+                backdrop.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('modal-backdrop') || e.target.closest('.modal-content[data-modal-target="' + backdrop.id + '"]')) {
+                        if (e.target.classList.contains('modal-backdrop')) {
+                            backdrop.classList.add('hidden')
+                            backdrop.classList.remove('flex')
+                        }
+                    }
+                })
+            })
+
+            // Input Source Comparator
+            const sourceTabs = document.querySelectorAll('.tab')
+            const sourceTextContent = document.getElementById('source-text-content')
+            let sourceRadarChart
+
+            function updateSourceContent(sourceKey) {
+                const data = sourceData[sourceKey]
+                sourceTextContent.innerHTML = `
+                    <h3 class="text-3xl font-bold mb-4">${data.title}</h3>
+                    <p class="text-gray-600 mb-6">${data.description}</p>
+                    <div class="grid sm:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <h4 class="font-semibold text-green-700 mb-2">Pros</h4>
+                            <ul class="space-y-1">${data.pros.map(p => `<li class="flex items-start"><span class="text-green-500 mr-2">&#10003;</span>${p}</li>`).join('')}</ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-red-700 mb-2">Cons</h4>
+                            <ul class="space-y-1">${data.cons.map(c => `<li class="flex items-start"><span class="text-red-500 mr-2">&#10007;</span>${c}</li>`).join('')}</ul>
+                        </div>
+                    </div>
+                     <div class="mt-6 text-center sm:text-left">
+                        <span class="font-semibold">Report Priority:</span>
+                        <span class="inline-block bg-teal-100 text-teal-800 text-sm font-semibold px-3 py-1 rounded-full">${data.priority}</span>
+                    </div>
+                `
+
+                if (sourceRadarChart) {
+                    sourceRadarChart.data.datasets[0].data = data.ratings
+                    sourceRadarChart.update()
+                }
+
+                sourceTabs.forEach(t => t.classList.remove('active'))
+                document.querySelector(`.tab[data-source="${sourceKey}"]`).classList.add('active')
+            }
+
+            const radarCtx = document.getElementById('sourceRadarChart').getContext('2d')
+            sourceRadarChart = new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Explicitness', 'Granularity', 'Semantic Richness', 'Ease of Parsing', 'Theme Support'],
+                    datasets: [{
+                        label: 'Source Rating',
+                        data: [],
+                        backgroundColor: 'rgba(0, 121, 107, 0.2)',
+                        borderColor: 'rgb(0, 121, 107)',
+                        pointBackgroundColor: 'rgb(0, 121, 107)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(0, 121, 107)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0,0,0,0.1)' },
+                            grid: { color: 'rgba(0,0,0,0.1)' },
+                            pointLabels: { font: { size: 12 } },
+                            min: 0,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1,
+                                backdropColor: 'rgba(255, 255, 255, 0)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            })
+
+            sourceTabs.forEach(tab => {
+                tab.addEventListener('click', () => updateSourceContent(tab.dataset.source))
+            })
+            updateSourceContent('figma')
+
+            // Token Namer
+            const tokenCat = document.getElementById('token-cat')
+            const tokenType = document.getElementById('token-type')
+            const tokenItem = document.getElementById('token-item')
+            const generatedTokenName = document.getElementById('generated-token-name')
+
+            function updateTokenName() {
+                generatedTokenName.textContent = `${tokenCat.value}-${tokenType.value}-${tokenItem.value}`
+            }
+
+            [tokenCat, tokenType, tokenItem].forEach(el => el.addEventListener('change', updateTokenName))
+            updateTokenName()
+
+
+            // Output Formatter
+            const outputTabs = document.querySelectorAll('.output-tab')
+            const outputCodeBlock = document.getElementById('output-code-block')
+
+            function updateOutputContent(formatKey) {
+                const data = outputFormats[formatKey]
+                outputCodeBlock.innerHTML = data.code.replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                outputCodeBlock.className = `language-${data.language} text-white text-sm`
+
+                outputTabs.forEach(t => t.classList.remove('active'))
+                document.querySelector(`.output-tab[data-format="${formatKey}"]`).classList.add('active')
+            }
+
+            outputTabs.forEach(tab => {
+                tab.addEventListener('click', () => updateOutputContent(tab.dataset.format))
+            })
+            updateOutputContent('json')
+
+            // Checklist
+            const checklistItems = document.querySelectorAll('.checklist-item')
+            checklistItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    item.classList.toggle('checked')
+                })
+            })
+
+        });
+    </script>
+</body>
+
+</html>
