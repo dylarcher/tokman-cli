@@ -71,19 +71,119 @@ async function getVariables() {
   const effectiveApiKey = config.figma?.apiKey || process.env.FIGMA_API_KEY;
 
   if (!effectiveFileKey) {
-    console.warn('No Figma file key found in configuration for the figmaAdapter.');
-    return null; // Or throw error, depending on desired strictness
+    // console.warn('No Figma file key found in configuration for the figmaAdapter (variables).');
+    return null;
   }
   if (!effectiveApiKey) {
-    console.warn('No Figma API key found in configuration or environment for the figmaAdapter.');
-    return null; // Or throw error
+    // console.warn('No Figma API key found in configuration or environment for the figmaAdapter (variables).');
+    return null;
   }
 
   return fetchFigmaVariables(effectiveFileKey, effectiveApiKey);
 }
 
+/**
+ * Fetches all published styles from the Figma API for a given file.
+ *
+ * @param {string} fileKey The key of the Figma file.
+ * @param {string} apiKey The Figma API key (Personal Access Token).
+ * @returns {Promise<object>} A promise that resolves to the Figma styles data (response.data.meta.styles).
+ * @throws {Error} If the API request fails or if API key/file key is missing.
+ */
+async function fetchFigmaStyles(fileKey, apiKey) {
+  if (!fileKey) {
+    throw new Error('Figma file key is required to fetch styles.');
+  }
+  if (!apiKey) {
+    throw new Error('Figma API key is required to fetch styles.');
+  }
+
+  const url = `${FIGMA_API_BASE_URL}/files/${fileKey}/styles`;
+  console.log(`Fetching Figma styles from: ${url}`);
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'X-FIGMA-TOKEN': apiKey,
+      },
+    });
+
+    if (response.status === 200 && response.data && response.data.meta && response.data.meta.styles) {
+      console.log(`Successfully fetched ${response.data.meta.styles.length} Figma styles.`);
+      return response.data.meta.styles; // Return the array of styles
+    } else {
+      throw new Error(`Figma API request for styles failed with status ${response.status} or unexpected data structure.`);
+    }
+  } catch (error) {
+    if (error.response) {
+      console.error('Figma API Error Response (Styles):', error.response.data);
+      throw new Error(`Figma API request for styles failed with status ${error.response.status}: ${error.response.data.err || error.response.data.message || error.response.statusText}`);
+    } else if (error.request) {
+      console.error('Figma API No Response (Styles):', error.request);
+      throw new Error('No response received from Figma API for styles. Check network connectivity.');
+    } else {
+      console.error('Figma API Request Setup Error (Styles):', error.message);
+      throw new Error(`Failed to make Figma API request for styles: ${error.message}`);
+    }
+  }
+}
+
+/**
+ * Fetches specific nodes from the Figma API for a given file.
+ *
+ * @param {string} fileKey The key of the Figma file.
+ * @param {string} apiKey The Figma API key (Personal Access Token).
+ * @param {Array<string>} nodeIds An array of node IDs to fetch.
+ * @returns {Promise<object>} A promise that resolves to the Figma nodes data (response.data.nodes).
+ * @throws {Error} If the API request fails, nodeIds is empty, or if API key/file key is missing.
+ */
+async function fetchFigmaNodes(fileKey, apiKey, nodeIds) {
+  if (!fileKey) {
+    throw new Error('Figma file key is required to fetch nodes.');
+  }
+  if (!apiKey) {
+    throw new Error('Figma API key is required to fetch nodes.');
+  }
+  if (!nodeIds || nodeIds.length === 0) {
+    // console.warn('No node IDs provided to fetchFigmaNodes.');
+    return Promise.resolve({}); // Return empty object if no IDs, as API would error
+  }
+
+  const idsQueryParam = nodeIds.join(',');
+  const url = `${FIGMA_API_BASE_URL}/files/${fileKey}/nodes?ids=${idsQueryParam}&geometry=paths`; // Added geometry=paths as it's often useful
+  // console.log(`Fetching Figma nodes (${nodeIds.length}) from: ${url}`);
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'X-FIGMA-TOKEN': apiKey,
+      },
+    });
+
+    if (response.status === 200 && response.data && response.data.nodes) {
+      // console.log(`Successfully fetched data for ${Object.keys(response.data.nodes).length} Figma nodes.`);
+      return response.data.nodes; // Return the map of nodes
+    } else {
+      throw new Error(`Figma API request for nodes failed with status ${response.status} or unexpected data structure.`);
+    }
+  } catch (error) {
+    if (error.response) {
+      console.error('Figma API Error Response (Nodes):', error.response.data);
+      throw new Error(`Figma API request for nodes failed with status ${error.response.status}: ${error.response.data.err || error.response.data.message || error.response.statusText}`);
+    } else if (error.request) {
+      console.error('Figma API No Response (Nodes):', error.request);
+      throw new Error('No response received from Figma API for nodes. Check network connectivity.');
+    } else {
+      console.error('Figma API Request Setup Error (Nodes):', error.message);
+      throw new Error(`Failed to make Figma API request for nodes: ${error.message}`);
+    }
+  }
+}
+
 module.exports = {
   fetchFigmaVariables,
   getVariables,
+  fetchFigmaStyles,
+  fetchFigmaNodes, // Add this
   FIGMA_API_BASE_URL,
 };

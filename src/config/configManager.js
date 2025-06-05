@@ -28,19 +28,32 @@ function loadConfig() {
   // Dummy config for now, to be replaced by actual file loading logic
   const dummyConfig = {
     figma: {
-      apiKey: process.env.FIGMA_API_KEY || null, // Example: load from env var
-      fileKey: null, // Example: to be set by user
+      apiKey: process.env.FIGMA_API_KEY || null,
+      fileKey: 'YOUR_FIGMA_FILE_KEY_HERE', // Provide a placeholder fileKey
     },
-    // Add other configuration sections as needed (e.g., input sources, output formatters)
     sources: [
-      // Example: { type: 'figma', fileId: 'your_figma_file_id' },
-      // Example: { type: 'css', path: './styles/tokens.css' }
+      { type: 'figma', fileId: 'YOUR_FIGMA_FILE_KEY_HERE', processStyles: true }, // Example Figma source
+      { type: 'css', paths: ['./styles/tokens.css', './styles/more-tokens.css'] } // Example CSS sources
     ],
     output: [
-      // Example: { formatter: 'json', path: './tokens/tokens.json' }
+      { formatter: 'json', path: './dist/tokens', fileName: 'tokens.json' },
+      {
+        formatter: 'scss',
+        path: './dist/scss',
+        fileName: '_tokens.scss',
+        options: { generateMap: true, mapName: 'my-tokens' }
+      },
+      {
+        formatter: 'css',
+        path: './dist/css',
+        fileName: 'custom-properties.css',
+        options: { selector: ':root' } // Default selector
+      }
     ],
+    conflictResolution: 'figmaWins', // Example: 'figmaWins', 'cssWins', 'throwError'
     namingConvention: {
-      // Rules for token naming, e.g., separator: '-', casing: 'kebab'
+      separator: '-',
+      case: 'kebab' // e.g., 'kebab', 'camel', 'pascal'
     }
   };
 
@@ -61,8 +74,8 @@ function validateConfig(config) {
     // This check is a bit simplistic for now as apiKey could be set directly in a real config file
     // console.warn('Warning: Figma API key is not set. It should be provided via FIGMA_API_KEY environment variable or in the configuration file.');
   }
-  if (config.sources && config.sources.some(s => s.type === 'figma' && !s.fileId && !config.figma.fileKey)) {
-    // console.warn('Warning: Figma source specified but no fileKey/fileId provided.');
+  if (config.sources && config.sources.some(s => s.type === 'figma' && !s.fileId && !config.figma.fileKey && !config.figma.apiKey)) {
+    // console.warn('Warning: Figma source specified but no fileKey/fileId or apiKey provided.');
   }
   // Add more validation rules as the configuration structure solidifies
 }

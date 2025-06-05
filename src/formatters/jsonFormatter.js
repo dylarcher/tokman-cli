@@ -50,23 +50,49 @@ function formatTokensToJson(internalTokens) {
 
   internalTokens.forEach(token => {
     const tokenProperties = {
-      $value: token.$value,
+      $value: token.$value, // This should be the value from the default mode
       $type: token.$type,
     };
     if (token.$description) {
       tokenProperties.$description = token.$description;
     }
 
-    // Add mode values under an extension property if they exist and differ from default
-    // This is one way to include mode information; DTCG is flexible here.
-    // For now, we'll keep it simple and primarily focus on the default $value.
-    // A more complex setup might involve creating separate token files per mode or a richer structure.
-    // Let's add a custom extension property for modes if valuesByMode has more than one mode or
-    // if the single mode value is different from the main $value (though they should be same if only one mode).
-    if (token.valuesByMode && Object.keys(token.valuesByMode).length > 0) {
-      // A simple way to show modes, could be more structured
-      // This is not standard DTCG but an extension.
-      // tokenProperties['extension.modes'] = token.valuesByMode;
+    // Handle modes for extensions
+    // Add modes to extensions if there are multiple modes defined,
+    // or if there's one mode whose value is different from the main $value (though this shouldn't happen if $value is set correctly).
+    // Essentially, if valuesByMode provides more info than the default $value alone.
+    const modeKeys = Object.keys(token.valuesByMode || {});
+    const modesForExtension = {};
+    let addModesExtension = false;
+
+    if (modeKeys.length > 0) {
+        modeKeys.forEach(modeName => {
+            // Only add to extensions if it's not the default value already represented by $value,
+            // OR if we want to explicitly list all modes including the one that matches default.
+            // For now, let's list all modes defined if there's more than one,
+            // or if the single mode is somehow different (which implies $value wasn't set from it).
+            // A simpler rule: if there are any modes in valuesByMode, represent them.
+            modesForExtension[modeName] = token.valuesByMode[modeName];
+        });
+
+        // Only add the extension if there's something to add.
+        // For example, if valuesByMode contains only the default mode's value,
+        // it might be redundant. But for clarity, showing all available modes can be useful.
+        // Let's refine: only add if more than one mode, or if the single mode is different from $value
+        // (which would be unusual given current transformer logic but defensive).
+        // Or, more simply, always add if `valuesByMode` is not empty.
+        if (Object.keys(modesForExtension).length > 0) {
+             addModesExtension = true;
+        }
+    }
+
+
+    if (addModesExtension) {
+      if (!tokenProperties.extensions) {
+        tokenProperties.extensions = {};
+      }
+      // Using a potentially more specific namespace for Tokman
+      tokenProperties.extensions['com.tokman.modes'] = modesForExtension;
     }
 
     buildNestedObject(root, token.path, tokenProperties);

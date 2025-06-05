@@ -119,8 +119,107 @@ function transformFigmaVariablesToInternalTokens(parsedFigmaVariables) {
   return internalTokens;
 }
 
+/**
+ * Transforms a CSS custom property name (e.g., "--color-brand-primary") into a token name.
+ * Basic implementation: removes leading '--' and converts to lowercase.
+ * @param {string} cssPropName - The CSS custom property name.
+ * @returns {string} The transformed token name.
+ */
+function transformCssPropNameToTokenName(cssPropName) {
+  if (!cssPropName) return '';
+  return cssPropName.startsWith('--') ? cssPropName.substring(2).toLowerCase() : cssPropName.toLowerCase();
+}
+
+/**
+ * Infers the DTCG token type from a CSS value string.
+ * Basic implementation. More sophisticated type checking can be added.
+ * @param {string} cssValue - The CSS property value.
+ * @returns {string} DTCG type - e.g., "color", "string", "number", "dimension".
+ */
+function inferDtcgTypeFromCssValue(cssValue) {
+  if (!cssValue) return 'string'; // Default or throw error
+
+  // Simple checks, can be expanded (e.g., using regex or more parsing)
+  if (/^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(cssValue) ||
+      /^(rgb|rgba|hsl|hsla)\(/.test(cssValue)) {
+    return 'color';
+  }
+  // Check for numbers or dimensions (e.g., 16px, 2em, 1.5)
+  if (/^[+-]?(\d*\.)?\d+(px|em|rem|%|vw|vh|s|ms)?$/.test(cssValue) && !isNaN(parseFloat(cssValue))) {
+     if (/(px|em|rem|%|vw|vh|s|ms)$/.test(cssValue)) {
+        return 'dimension';
+     }
+     return 'number';
+  }
+  // TODO: Add checks for boolean, other specific types if conventions exist in CSS values.
+  return 'string'; // Default fallback
+}
+
+/**
+ * Transforms extracted CSS custom properties into an array of InternalToken objects.
+ * @param {Array<object>} cssProperties - Array of objects like { name, value, source }.
+ * @returns {Array<InternalToken>} Array of InternalToken objects.
+ */
+function transformCssPropertiesToInternalTokens(cssProperties) {
+  if (!cssProperties) return [];
+  const internalTokens = [];
+
+  cssProperties.forEach(prop => {
+    const tokenName = transformCssPropNameToTokenName(prop.name);
+    if (!tokenName) return; // Skip if name is invalid
+
+    const tokenPath = tokenName.split('-'); // Simple path generation based on '-'
+    const cssValue = prop.value.trim();
+    const dtcgType = inferDtcgTypeFromCssValue(cssValue);
+
+    // Basic value normalization for now - primarily trimming.
+    // Color values from CSS are typically strings already (e.g. #FFF, rgb(0,0,0))
+    // Unlike Figma, they don't need conversion from {r,g,b,a} objects at this stage.
+    // The formatter will handle specific string formats for colors if needed.
+    let tokenValue = cssValue;
+
+    // If type is color, we might want to parse it to a consistent object like Figma's output later
+    // For now, keep as string.
+    // If type is number/dimension, parse it.
+    if (dtcgType === 'number') {
+        tokenValue = parseFloat(cssValue);
+    } else if (dtcgType === 'dimension') {
+        // Keep as string for now, formatters can handle units.
+        // Or, parse into value/unit object: e.g. { value: parseFloat(cssValue), unit: cssValue.match(...)[1] }
+    }
+
+
+    const metadata = {
+      source: 'css',
+      originalName: prop.name,
+      originalValue: prop.value,
+      css: {
+        sourceFile: prop.source
+      }
+    };
+
+    // CSS custom properties don't have inherent modes in the same way Figma vars do.
+    // Description also not directly available from CSS property itself.
+    const token = new InternalToken(
+      tokenName,
+      tokenPath,
+      tokenValue,
+      dtcgType,
+      '', // No description from CSS directly
+      metadata,
+      {} // No modes from CSS directly
+    );
+    internalTokens.push(token);
+  });
+
+  return internalTokens;
+}
+
 module.exports = {
   transformFigmaNameToTokenName,
   mapFigmaTypeToDTCGType,
   transformFigmaVariablesToInternalTokens,
+  transformCssPropNameToTokenName,
+  inferDtcgTypeFromCssValue,
+  transformCssPropertiesToInternalTokens,
 };
