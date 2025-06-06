@@ -1,15 +1,24 @@
-# EditorConfig is awesome: https://EditorConfig.org
+#! formatting rules: common sense defaults
+#? see: <https://editorconfig.org>
 
-# top-most EditorConfig file
+# base ruleset
 root = true
 
 [*]
+# indentation rules
 indent_style = space
 indent_size = 2
-end_of_line = lf
-charset = utf-8
-trim_trailing_whitespace = true
-insert_final_newline = true
 
-[*.md]
+# character and symbol rules
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# good practice: ignore whitespace rules (optional)
+[{*.md,*.txt,*.json,*.yml}]
 trim_trailing_whitespace = false
+
+#* below this: specific language rules (optional)
+[{*.css,*.html,*.js,*.json,*.md,*.yml,*.svg}]
+indent_size = 2

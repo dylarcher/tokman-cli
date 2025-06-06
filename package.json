@@ -6,10 +6,6 @@
   "bin": {
     "cssman-cli": "src/cli.js"
   },
-  "scripts": {
-    "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
-  },
   "keywords": [
     "design-tokens",
     "cli",
@@ -28,6 +24,16 @@
   "homepage": "https://github.com/USERNAME/REPOSITORY#readme",
   "dependencies": {
     "axios": "^1.0.0"
+  },
+  "scripts": {
+    "build": "tsc --declaration --declarationMap false --emitDeclarationOnly false --outDir dist --declarationDir dist/types --moduleResolution node --module esnext --target esnext --sourceMap true --inlineSourceMap true && npm run bundle:types",
+    "bundle:types": "dts-bundle-generator -o dist/types.d.ts src/**/*.ts",
+    "clean": "npm run clean:dist && npm run clean:libs",
+    "clean:dist": "rimraf dist lib test/coverage .vscode-test types",
+    "clean:libs": "rimraf node_modules package-lock.json .cache/npm",
+    "format": "biome format -- --config-path .github/configs/biome.json src && markdownlint --config .github/configs/.markdownlintrc -- **/*.md",
+    "lint": "biome lint -- --config-path .github/configs/biome.json src && yamllint -- -c .github/configs/yamllint.yaml .github/**/*.yml",
+    "test": "c8 --config .github/configs/.c8rc.json node --test"
   },
   "devDependencies": {
     "commander": "14.0.0",
