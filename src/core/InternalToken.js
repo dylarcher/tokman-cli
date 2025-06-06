@@ -43,4 +43,4 @@ class InternalToken {
   }
 }
 
-module.exports = InternalToken;
+export default InternalToken;

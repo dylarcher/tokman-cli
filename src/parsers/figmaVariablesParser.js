@@ -7,7 +7,6 @@
  */
 function parseFigmaColor(figmaColor) {
   if (!figmaColor || typeof figmaColor.r !== 'number' || typeof figmaColor.g !== 'number' || typeof figmaColor.b !== 'number' || typeof figmaColor.a !== 'number') {
-    // console.warn('Invalid Figma color object received:', figmaColor);
     return null; // Or throw an error, or return a default color
   }
   return {
@@ -47,7 +46,6 @@ function parseFigmaVariablesResponse(figmaVariablesData) {
     const collection = variableCollections[figmaVar.variableCollectionId];
 
     if (!collection) {
-      // console.warn(`Variable "${figmaVar.name}" references a non-existent collection ID "${figmaVar.variableCollectionId}". Skipping.`);
       continue;
     }
 
@@ -68,7 +66,6 @@ function parseFigmaVariablesResponse(figmaVariablesData) {
       if (figmaVar.resolvedType === 'COLOR') {
         value = parseFigmaColor(value);
         if (value === null) {
-            // console.warn(`Could not parse color for variable "${figmaVar.name}" in mode "${modeName}". Skipping mode.`);
             continue;
         }
       }
@@ -98,7 +95,7 @@ function parseFigmaVariablesResponse(figmaVariablesData) {
   return parsedVariables;
 }
 
-module.exports = {
+export {
   parseFigmaVariablesResponse,
   parseFigmaColor, // Exporting for potential utility use elsewhere or testing
 };

@@ -1,7 +1,7 @@
 // src/formatters/scssFormatter.js
 
-const fs = require('fs').promises;
-const path = require('path');
+import fs from 'fs/promises';
+import path from 'path';
 
 /**
  * Converts an InternalToken value to its SCSS string representation.
@@ -137,7 +137,7 @@ async function writeScssOutput(outputDir, fileName, internalTokens, options = {}
   }
 }
 
-module.exports = {
+export {
   formatScssValue,
   formatTokensToScss,
   writeScssOutput,

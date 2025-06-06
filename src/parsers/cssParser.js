@@ -1,7 +1,7 @@
 // src/parsers/cssParser.js
 
-const fs = require('fs').promises;
-const csstree = require('css-tree');
+import fs from 'fs/promises';
+import csstree from 'css-tree';
 
 /**
  * Reads a CSS file and parses its content.
@@ -33,7 +33,6 @@ function extractCssCustomProperties(cssContent, sourcePath = 'unknown.css') {
   const ast = csstree.parse(cssContent, {
     parseValue: true, // Ensure values are parsed
     onParseError: (error) => {
-      // console.warn(`CSS parsing error in ${sourcePath}: ${error.message} at line ${error.line}, column ${error.column}`);
       // Depending on strictness, you might choose to throw here or collect errors.
     }
   });
@@ -82,14 +81,12 @@ function extractCssCustomProperties(cssContent, sourcePath = 'unknown.css') {
  * @returns {Promise<Array<object>>} Array of extracted custom properties.
  */
 async function processCssFile(filePath) {
-  // console.log(`Processing CSS file: ${filePath}`);
   const cssContent = await readCssFile(filePath);
   const properties = extractCssCustomProperties(cssContent, filePath);
-  // console.log(`Found ${properties.length} custom properties in ${filePath}.`);
   return properties;
 }
 
-module.exports = {
+export {
   readCssFile,
   extractCssCustomProperties,
   processCssFile,

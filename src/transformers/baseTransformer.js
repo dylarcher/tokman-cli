@@ -1,6 +1,6 @@
 // src/transformers/baseTransformer.js
 
-const InternalToken = require('../core/InternalToken');
+import InternalToken from '../core/InternalToken.js';
 
 /**
  * Transforms a Figma variable name (e.g., "colors/brand/primary") into a token name.
@@ -32,7 +32,6 @@ function mapFigmaTypeToDTCGType(figmaResolvedType) {
     case 'BOOLEAN':
       return 'boolean';
     default:
-      // console.warn(`Unknown Figma resolvedType: ${figmaResolvedType}. Defaulting to 'string'.`);
       return 'string'; // Or throw an error
   }
 }
@@ -76,7 +75,6 @@ function transformFigmaVariablesToInternalTokens(parsedFigmaVariables) {
         }
     } else {
         // Should not happen if variables are correctly defined, but handle defensively
-        // console.warn(`Variable "${parsedVar.name}" has no valuesByMode. Skipping.`);
         return; // Skip this variable
     }
 
@@ -86,7 +84,6 @@ function transformFigmaVariablesToInternalTokens(parsedFigmaVariables) {
         const firstModeName = Object.keys(tokenValuesByMode)[0];
         defaultValue = tokenValuesByMode[firstModeName];
     } else if (defaultValue === null) {
-        // console.warn(`Variable "${parsedVar.name}" resolved to no usable default value. Skipping.`);
         return; // Skip if no value could be determined
     }
 
@@ -215,7 +212,7 @@ function transformCssPropertiesToInternalTokens(cssProperties) {
   return internalTokens;
 }
 
-module.exports = {
+export {
   transformFigmaNameToTokenName,
   mapFigmaTypeToDTCGType,
   transformFigmaVariablesToInternalTokens,

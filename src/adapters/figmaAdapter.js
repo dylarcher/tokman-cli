@@ -1,7 +1,7 @@
 // src/adapters/figmaAdapter.js
 
-const axios = require('axios');
-const { config } = require('../config/configManager');
+import axios from 'axios';
+import { config } from '../config/configManager.js';
 
 const FIGMA_API_BASE_URL = 'https://api.figma.com/v1';
 
@@ -71,11 +71,9 @@ async function getVariables() {
   const effectiveApiKey = config.figma?.apiKey || process.env.FIGMA_API_KEY;
 
   if (!effectiveFileKey) {
-    // console.warn('No Figma file key found in configuration for the figmaAdapter (variables).');
     return null;
   }
   if (!effectiveApiKey) {
-    // console.warn('No Figma API key found in configuration or environment for the figmaAdapter (variables).');
     return null;
   }
 
@@ -145,13 +143,11 @@ async function fetchFigmaNodes(fileKey, apiKey, nodeIds) {
     throw new Error('Figma API key is required to fetch nodes.');
   }
   if (!nodeIds || nodeIds.length === 0) {
-    // console.warn('No node IDs provided to fetchFigmaNodes.');
     return Promise.resolve({}); // Return empty object if no IDs, as API would error
   }
 
   const idsQueryParam = nodeIds.join(',');
   const url = `${FIGMA_API_BASE_URL}/files/${fileKey}/nodes?ids=${idsQueryParam}&geometry=paths`; // Added geometry=paths as it's often useful
-  // console.log(`Fetching Figma nodes (${nodeIds.length}) from: ${url}`);
 
   try {
     const response = await axios.get(url, {
@@ -161,7 +157,6 @@ async function fetchFigmaNodes(fileKey, apiKey, nodeIds) {
     });
 
     if (response.status === 200 && response.data && response.data.nodes) {
-      // console.log(`Successfully fetched data for ${Object.keys(response.data.nodes).length} Figma nodes.`);
       return response.data.nodes; // Return the map of nodes
     } else {
       throw new Error(`Figma API request for nodes failed with status ${response.status} or unexpected data structure.`);
@@ -180,7 +175,7 @@ async function fetchFigmaNodes(fileKey, apiKey, nodeIds) {
   }
 }
 
-module.exports = {
+export {
   fetchFigmaVariables,
   getVariables,
   fetchFigmaStyles,

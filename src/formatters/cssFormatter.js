@@ -1,7 +1,7 @@
 // src/formatters/cssFormatter.js
 
-const fs = require('fs').promises;
-const path = require('path');
+import fs from 'fs/promises';
+import path from 'path';
 
 /**
  * Converts an InternalToken value to its CSS string representation.
@@ -90,7 +90,7 @@ async function writeCssOutput(outputDir, fileName, internalTokens, options = {})
   }
 }
 
-module.exports = {
+export {
   formatCssValue,
   formatTokensToCss,
   writeCssOutput,

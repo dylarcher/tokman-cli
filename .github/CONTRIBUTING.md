@@ -4,12 +4,12 @@ Contributions are welcome and greatly appreciated! Whether it's reporting a bug,
 
 ## How to Contribute
 
-1. **Fork the Repository:** Start by forking the [REPOSITORY_NAMESPACE](https://github.com/dylarcher/[REPOSITORY_NAMESPACE]) to your own GitHub account.
+1. **Fork the Repository:** Start by forking the cssman-cli(https://github.com/dylarcher/cssman-cli) to your own GitHub account.
 2. **Clone Your Fork:** Clone your forked repository to your local machine.
 
     ```bash
-    git clone https://github.com/dylarcher/[REPOSITORY_NAMESPACE].git
-    cd [REPOSITORY_NAMESPACE]
+    git clone https://github.com/dylarcher/cssman-cli.git
+    cd cssman-cli
     ```
 
 3. **Create a Branch:** Create a new branch for your changes.
@@ -38,7 +38,7 @@ Contributions are welcome and greatly appreciated! Whether it's reporting a bug,
     git push origin feature/your-feature-name
     ```
 
-8. **Open a Pull Request:** Go to the original [REPOSITORY_NAMESPACE](https://github.com/dylarcher/REPOSITORY_NAMESPACE) and open a pull request from your forked branch to the `dev` branch of the original repository. Provide a clear description of your changes.
+8. **Open a Pull Request:** Go to the original cssman-cli(https://github.com/dylarcher/cssman-cli) and open a pull request from your forked branch to the `dev` branch of the original repository. Provide a clear description of your changes.
 
 ## Reporting Bugs
 

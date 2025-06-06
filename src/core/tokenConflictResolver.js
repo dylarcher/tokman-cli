@@ -14,7 +14,6 @@ function resolveTokenConflicts(unprocessedTokens, conflictStrategy = 'figmaWins'
   unprocessedTokens.forEach(token => {
     const existingToken = finalTokensMap.get(token.name);
     if (existingToken) {
-      // console.warn(`Conflict detected for token: "${token.name}" (Sources: Existing '${existingToken.metadata.source}', New '${token.metadata.source}')`);
       let resolved = false;
       if (conflictStrategy === 'throwError') {
         throw new Error(`Token name conflict for "${token.name}" between sources '${existingToken.metadata.source}' and '${token.metadata.source}'.`);
@@ -40,9 +39,6 @@ function resolveTokenConflicts(unprocessedTokens, conflictStrategy = 'figmaWins'
         }
       }
 
-      // if (resolved) console.log(`  Resolved: Kept token from source '${finalTokensMap.get(token.name).metadata.source}'.`);
-      // else console.log(`  Resolved: Kept existing token from source '${existingToken.metadata.source}'.`);
-
     } else {
       finalTokensMap.set(token.name, token);
     }
@@ -52,4 +48,4 @@ function resolveTokenConflicts(unprocessedTokens, conflictStrategy = 'figmaWins'
   return resolvedTokens;
 }
 
-module.exports = { resolveTokenConflicts };
+export { resolveTokenConflicts };

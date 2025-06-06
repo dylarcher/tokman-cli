@@ -1,7 +1,7 @@
 // src/config/configManager.js
 
-const path = require('path');
-const fs = require('fs');
+import path from 'path';
+import fs from 'fs';
 
 const CONFIG_FILE_NAME = 'cssman.config.js'; // Or .json, .yaml, etc.
 
@@ -15,8 +15,6 @@ const CONFIG_FILE_NAME = 'cssman.config.js'; // Or .json, .yaml, etc.
  */
 function loadConfig() {
   // const configPath = path.resolve(process.cwd(), CONFIG_FILE_NAME);
-
-  // console.log(`Attempting to load configuration from: ${configPath}`);
 
   // // Placeholder: In a real scenario, you would read and parse the file.
   // // For example, if it's a JS file:
@@ -57,7 +55,6 @@ function loadConfig() {
     }
   };
 
-  // console.log('Loaded dummy configuration:', dummyConfig);
   // return { ...defaultConfig, ...userConfig }; // Merge with defaults if any
   return dummyConfig; // Returning dummy config for now
 }
@@ -72,10 +69,8 @@ function loadConfig() {
 function validateConfig(config) {
   if (!config.figma || (!config.figma.apiKey && !process.env.FIGMA_API_KEY)) {
     // This check is a bit simplistic for now as apiKey could be set directly in a real config file
-    // console.warn('Warning: Figma API key is not set. It should be provided via FIGMA_API_KEY environment variable or in the configuration file.');
   }
   if (config.sources && config.sources.some(s => s.type === 'figma' && !s.fileId && !config.figma.fileKey && !config.figma.apiKey)) {
-    // console.warn('Warning: Figma source specified but no fileKey/fileId or apiKey provided.');
   }
   // Add more validation rules as the configuration structure solidifies
 }
@@ -83,7 +78,7 @@ function validateConfig(config) {
 const config = loadConfig();
 validateConfig(config);
 
-module.exports = {
+export {
   config,
   loadConfig, // Exporting for potential re-load or direct use
   CONFIG_FILE_NAME

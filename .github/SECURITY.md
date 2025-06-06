@@ -2,7 +2,7 @@
 
 ## 🛡️ Supported Versions
 
-We are committed to ensuring the security of the `[REPOSITORY_NAMESPACE]` tool. Security updates and patches will be provided for the following versions:
+We are committed to ensuring the security of the `cssman-cli` tool. Security updates and patches will be provided for the following versions:
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -24,7 +24,7 @@ We take all security vulnerabilities seriously. If you discover a security vulne
         * The version of the tool affected.
         * Any potential impact.
         * If possible, suggest a fix or mitigation.
-2. **Sensitive Vulnerabilities:** If you believe the vulnerability is particularly sensitive and should not be publicly disclosed immediately, please email the primary maintainer directly at `dylarcher@zohomail.com` with the subject line "Security Vulnerability Report: [REPOSITORY_NAMESPACE]".
+2. **Sensitive Vulnerabilities:** If you believe the vulnerability is particularly sensitive and should not be publicly disclosed immediately, please email the primary maintainer directly at `dylarcher@zohomail.com` with the subject line "Security Vulnerability Report: cssman-cli".
 
 **What to Expect:**
 

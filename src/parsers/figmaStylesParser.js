@@ -1,5 +1,5 @@
 // src/parsers/figmaStylesParser.js
-const { parseFigmaColor } = require('./figmaVariablesParser');
+import { parseFigmaColor } from './figmaVariablesParser.js';
 
 function parseFigmaStylesResponse(figmaStylesData, figmaNodesData = {}) {
   if (!Array.isArray(figmaStylesData)) {
@@ -138,6 +138,6 @@ function parseFigmaStylesResponse(figmaStylesData, figmaNodesData = {}) {
   return potentialTokens;
 }
 
-module.exports = {
+export {
   parseFigmaStylesResponse,
 };

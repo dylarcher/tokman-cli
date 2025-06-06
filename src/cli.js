@@ -2,18 +2,19 @@
 
 // src/cli.js
 
-const { Command } = require('commander');
-const { config, loadConfig, CONFIG_FILE_NAME } = require('./config/configManager'); // Using named import for loadConfig
-const { getVariables, fetchFigmaStyles, fetchFigmaNodes } = require('../adapters/figmaAdapter');
-const { parseFigmaVariablesResponse } = require('./parsers/figmaVariablesParser');
-const { parseFigmaStylesResponse } = require('../parsers/figmaStylesParser'); // Import new parser
-const { transformFigmaVariablesToInternalTokens, transformCssPropertiesToInternalTokens } = require('./transformers/baseTransformer');
-const { writeJsonOutput } = require('./formatters/jsonFormatter');
-const { writeScssOutput } = require('./formatters/scssFormatter');
-const { writeCssOutput } = require('./formatters/cssFormatter');
-const { resolveTokenConflicts } = require('../core/tokenConflictResolver'); // Import the new resolver
-const path = require('path');
-const { processCssFile } = require('./parsers/cssParser');
+import { Command } from 'commander';
+import { config, CONFIG_FILE_NAME } from './config/configManager.js'; // Using named import for loadConfig
+import { getVariables, fetchFigmaStyles, fetchFigmaNodes } from '../adapters/figmaAdapter.js';
+import { parseFigmaVariablesResponse } from './parsers/figmaVariablesParser.js';
+import { parseFigmaStylesResponse } from './parsers/figmaStylesParser.js'; // Import new parser
+import { transformFigmaVariablesToInternalTokens, transformCssPropertiesToInternalTokens } from './transformers/baseTransformer.js';
+import { writeJsonOutput } from './formatters/jsonFormatter.js';
+import { writeScssOutput } from './formatters/scssFormatter.js';
+import { writeCssOutput } from './formatters/cssFormatter.js';
+import { resolveTokenConflicts } from '../core/tokenConflictResolver.js'; // Import the new resolver
+import path from 'path';
+import { processCssFile } from './parsers/cssParser.js';
+import pkg from '../package.json' assert { type: 'json' };
 
 
 const program = new Command();
@@ -21,7 +22,7 @@ const program = new Command();
 program
   .name('cssman-cli')
   .description('CLI tool for generating and managing design tokens.')
-  .version(require('../package.json').version); // Assumes package.json is one level up
+  .version(pkg.version); // Assumes package.json is one level up
 
 program
   .command('build')
@@ -95,8 +96,6 @@ program
       if (allSourceData.length === 0) {
         // If only CSS processing failed but Figma variables might exist, this check might be too early.
         // However, if all sources including variables yield no data, it's correct.
-        // console.error('No data extracted from primary sources. Halting build.');
-        // process.exit(1);
         // For now, we will allow proceeding if only style processing might add data later.
       }
 
@@ -115,7 +114,6 @@ program
                           const stylesArray = await fetchFigmaStyles(fileKey, apiKey);
                           if (stylesArray && stylesArray.length > 0) {
                               const nodeIdsToFetch = [...new Set(stylesArray.map(s => s.node_id).filter(id => id))] ;
-                              // console.log(`Found ${nodeIdsToFetch.length} unique node_ids from styles to fetch details for.`);
 
                               let nodesData = {};
                               if (nodeIdsToFetch.length > 0) {

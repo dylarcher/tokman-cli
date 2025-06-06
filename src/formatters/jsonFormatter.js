@@ -1,7 +1,7 @@
 // src/formatters/jsonFormatter.js
 
-const fs = require('fs').promises; // Using promises version of fs
-const path = require('path');
+import fs from 'fs/promises'; // Using promises version of fs
+import path from 'path';
 
 /**
  * Builds a nested object structure from a token's path and its properties.
@@ -19,7 +19,6 @@ function buildNestedObject(obj, pathSegments, tokenProperties) {
         Object.assign(current[segment], tokenProperties);
       } else if (current[segment]) {
         // A direct value or token already exists, this indicates a potential naming conflict or path issue
-        // console.warn(`Conflict: Path segment "${segment}" for token "${pathSegments.join('.')}" would overwrite existing group or token.`);
         // For now, we'll overwrite, but this might need a more robust conflict resolution strategy.
         current[segment] = tokenProperties;
       } else {
@@ -31,7 +30,6 @@ function buildNestedObject(obj, pathSegments, tokenProperties) {
         // If it doesn't exist, or it's a token itself (not a group), create a new group.
         // Overwriting a token with a group or vice-versa should be handled carefully.
         if (current[segment] && current[segment].$value) {
-          // console.warn(`Conflict: Path segment "${segment}" for token "${pathSegments.join('.')}" creates a group that overwrites an existing token.`);
         }
         current[segment] = {};
       }
@@ -129,7 +127,7 @@ async function writeJsonOutput(outputDir, fileName, internalTokens) {
   }
 }
 
-module.exports = {
+export {
   formatTokensToJson,
   writeJsonOutput,
 };
