@@ -19,7 +19,7 @@ const { processCssFile } = require('./parsers/cssParser');
 const program = new Command();
 
 program
-  .name('tokman-cli')
+  .name('cssman-cli')
   .description('CLI tool for generating and managing design tokens.')
   .version(require('../package.json').version); // Assumes package.json is one level up
 

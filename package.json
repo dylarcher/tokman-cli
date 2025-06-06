@@ -1,10 +1,10 @@
 {
-  "name": "tokman-cli",
+  "name": "cssman-cli",
   "version": "0.1.0",
   "description": "A library intended to generate design tokens from a style source",
   "main": "src/index.js",
   "bin": {
-    "tokman-cli": "src/cli.js"
+    "cssman-cli": "src/cli.js"
   },
   "scripts": {
     "test": "jest",

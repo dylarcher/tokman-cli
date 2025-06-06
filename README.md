@@ -1,8 +1,8 @@
-# Tokman CLI 🪙
+# Cssman CLI 🪙
 
 **A powerful CLI tool for generating and managing design tokens from your style source.**
 
-Tokman CLI helps streamline your design system workflow by automating the creation of design tokens, ensuring consistency across platforms and projects.
+Cssman CLI helps streamline your design system workflow by automating the creation of design tokens, ensuring consistency across platforms and projects.
 
 ## Features ✨
 
@@ -29,15 +29,15 @@ Tokman CLI helps streamline your design system workflow by automating the creati
 
 ```bash
 # Using npm (Node.js package manager)
-npm install -g tokman-cli
+npm install -g cssman-cli
 
 # Using yarn
-yarn global add tokman-cli
+yarn global add cssman-cli
 
 # For local project usage
-npm install --save-dev tokman-cli
+npm install --save-dev cssman-cli
 # or
-yarn add --dev tokman-cli
+yarn add --dev cssman-cli
 ```
 *(Adjust installation instructions based on the actual package manager and distribution method if different, e.g., direct download, other package managers.)*
 
@@ -45,14 +45,14 @@ yarn add --dev tokman-cli
 
 1.  **Initialize Configuration:**
     ```bash
-    tokman init
+    cssman init
     ```
-    This will create a `tokman.config.js` (or similar) file in your project root.
+    This will create a `cssman.config.js` (or similar) file in your project root.
 
 2.  **Define your style source(s)** in the configuration file.
-    Example `tokman.config.js`:
+    Example `cssman.config.js`:
     ```javascript
-    // tokman.config.js (example)
+    // cssman.config.js (example)
     module.exports = {
       source: ['./styles/tokens.json'], // Path to your token definitions
       platforms: {
@@ -68,11 +68,11 @@ yarn add --dev tokman-cli
       }
     };
     ```
-    *(This is a common structure for token tools like Style Dictionary; adjust if Tokman's config is different).*
+    *(This is a common structure for token tools like Style Dictionary; adjust if Cssman's config is different).*
 
 3.  **Build your tokens:**
     ```bash
-    tokman build
+    cssman build
     ```
     Your generated tokens will be in the `dist/` directory (or as configured).
 
@@ -80,17 +80,17 @@ yarn add --dev tokman-cli
 
 ### Commands
 
-*   `tokman init`: Initialize a new configuration file.
-*   `tokman build`: Build/generate tokens based on the configuration.
-*   `tokman clean`: Remove previously built artifacts.
-*   `tokman --help`: Display help information for all commands.
-*   `tokman <command> --help`: Display help for a specific command.
+*   `cssman init`: Initialize a new configuration file.
+*   `cssman build`: Build/generate tokens based on the configuration.
+*   `cssman clean`: Remove previously built artifacts.
+*   `cssman --help`: Display help information for all commands.
+*   `cssman <command> --help`: Display help for a specific command.
 
 *(Add or modify commands as per actual CLI functionality)*
 
 ### Configuration
 
-Tokman CLI is configured via a `tokman.config.js` (or `.json`, `.yaml`) file in your project root.
+Cssman CLI is configured via a `cssman.config.js` (or `.json`, `.yaml`) file in your project root.
 
 Key configuration options:
 *   `source`: An array of glob patterns for your token source files.
@@ -114,4 +114,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-*Remember to update placeholders (like feature descriptions, installation steps if not an npm package, configuration details, command list) with actual information specific to `tokman-cli`.*
+*Remember to update placeholders (like feature descriptions, installation steps if not an npm package, configuration details, command list) with actual information specific to `cssman-cli`.*
