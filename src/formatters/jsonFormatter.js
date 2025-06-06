@@ -92,7 +92,7 @@ function formatTokensToJson(internalTokens) {
         tokenProperties.extensions = {};
       }
       // Using a potentially more specific namespace for Tokman
-      tokenProperties.extensions['com.tokman.modes'] = modesForExtension;
+      tokenProperties.extensions['com.cssman.modes'] = modesForExtension;
     }
 
     buildNestedObject(root, token.path, tokenProperties);

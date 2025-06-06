@@ -3,12 +3,12 @@
 const path = require('path');
 const fs = require('fs');
 
-const CONFIG_FILE_NAME = 'tokman.config.js'; // Or .json, .yaml, etc.
+const CONFIG_FILE_NAME = 'cssman.config.js'; // Or .json, .yaml, etc.
 
 /**
  * Loads the project configuration.
  * For now, this is a placeholder. In the future, it will load
- * from a configuration file (e.g., tokman.config.js).
+ * from a configuration file (e.g., cssman.config.js).
  *
  * @returns {object} The loaded configuration object.
  * @throws {Error} If the configuration file is not found or is invalid.
