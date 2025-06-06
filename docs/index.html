@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
     <!-- Chosen Palette: Warm Neutrals with Teal/Blue Accents -->
     <!-- Application Structure Plan: A top-to-bottom exploratory journey designed to guide a developer or designer through the key concepts and decisions of building a design token library. It starts with the "Why" (intro to tokens), moves to the "How" (interactive architecture), then a critical decision point ("From Where" - input sources), followed by the practical application ("What it Becomes" - token design) and end result ("What You Get" - output formats), and concludes with actionable advice ("Build it Right"). This task-oriented flow, supported by interactive components like a clickable diagram, a source comparator with a radar chart, a token naming tool, and a code showcase, was chosen to make the dense report content more engaging, understandable, and memorable than a linear text presentation. -->
     <!-- Visualization & Content Choices:
@@ -158,7 +159,7 @@
                     <h3 class="text-2xl font-semibold mb-4">1. Installation</h3>
                     <p class="text-gray-600 mb-4">Install `cssman-cli` globally or as a project dependency using npm or yarn:</p>
                     <div class="bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto">
-                        <pre><code class="text-white text-sm"># Using npm
+                        <pre><code class="language-bash text-sm"># Using npm
 npm install -g cssman-cli
 
 # Using yarn
@@ -174,7 +175,7 @@ yarn add --dev cssman-cli</code></pre>
                     <h3 class="text-2xl font-semibold mb-4">2. Initialize Configuration</h3>
                     <p class="text-gray-600 mb-4">Generate a configuration file in your project root:</p>
                     <div class="bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto">
-                        <pre><code class="text-white text-sm">cssman init</code></pre>
+                        <pre><code class="language-bash text-sm">cssman init</code></pre>
                     </div>
                     <p class="text-gray-600 mb-4">This creates a `cssman.config.js` file. You'll need to define your style sources in this file. Here's a simple example:</p>
                     <div class="bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto">
@@ -200,7 +201,7 @@ module.exports = {
                     <h3 class="text-2xl font-semibold mb-4">3. Build Your Tokens</h3>
                     <p class="text-gray-600 mb-4">Generate your design tokens based on the configuration:</p>
                     <div class="bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto">
-                        <pre><code class="text-white text-sm">cssman build</code></pre>
+                        <pre><code class="language-bash text-sm">cssman build</code></pre>
                     </div>
                     <p class="text-gray-600">Your generated tokens will typically be placed in the `dist/` directory, or as specified in your configuration.</p>
                 </div>
@@ -209,11 +210,11 @@ module.exports = {
                     <h3 class="text-2xl font-semibold mb-4">Other Useful Commands</h3>
                     <p class="text-gray-600 mb-2"><strong>Clean previous builds:</strong></p>
                     <div class="bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto">
-                        <pre><code class="text-white text-sm">cssman clean</code></pre>
+                        <pre><code class="language-bash text-sm">cssman clean</code></pre>
                     </div>
                     <p class="text-gray-600 mb-2"><strong>Get help:</strong></p>
                     <div class="bg-gray-800 rounded-lg p-4 overflow-x-auto">
-                        <pre><code class="text-white text-sm">cssman --help</code></pre>
+                        <pre><code class="language-bash text-sm">cssman --help</code></pre>
                     </div>
                 </div>
             </div>
@@ -333,21 +334,21 @@ module.exports = {
                         <div class="p-3 bg-red-50 border-l-4 border-red-400 rounded-r-md">
                             <h4 class="font-bold">1. Primitive Tokens</h4>
                             <p class="text-sm text-gray-600">Raw, context-agnostic values from your palette.</p>
-                            <code class="text-sm font-mono text-red-700">color-blue-500: #007BFF;</code>
+                            <code class="language-clike text-sm font-mono">color-blue-500: #007BFF;</code>
                         </div>
                         <div class="text-2xl ml-4">&darr;</div>
                         <div class="p-3 bg-green-50 border-l-4 border-green-400 rounded-r-md">
                             <h4 class="font-bold">2. Semantic Tokens</h4>
                             <p class="text-sm text-gray-600">Give purpose to primitives by creating an alias.</p>
                             <code
-                                class="text-sm font-mono text-green-700">color-text-interactive: {color-blue-500};</code>
+                                class="language-clike text-sm font-mono">color-text-interactive: {color-blue-500};</code>
                         </div>
                         <div class="text-2xl ml-4">&darr;</div>
                         <div class="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-md">
                             <h4 class="font-bold">3. Component Tokens (Optional)</h4>
                             <p class="text-sm text-gray-600">Scope tokens to a specific component for overrides.</p>
                             <code
-                                class="text-sm font-mono text-yellow-700">button-primary-text-color: {color-text-interactive};</code>
+                                class="language-clike text-sm font-mono">button-primary-text-color: {color-text-interactive};</code>
                         </div>
                     </div>
                 </div>
@@ -518,6 +519,8 @@ module.exports = {
     </div>
 
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -792,7 +795,10 @@ export const tokens = {
             function updateOutputContent(formatKey) {
                 const data = outputFormats[formatKey]
                 outputCodeBlock.innerHTML = data.code.replace(/</g, "&lt;").replace(/>/g, "&gt;")
-                outputCodeBlock.className = `language-${data.language} text-white text-sm`
+                // Ensure Prism re-highlights when content changes for this specific block
+                outputCodeBlock.className = `language-${data.language} text-sm` // Removed text-white as Prism handles colors
+                Prism.highlightElement(outputCodeBlock);
+
 
                 outputTabs.forEach(t => t.classList.remove('active'))
                 document.querySelector(`.output-tab[data-format="${formatKey}"]`).classList.add('active')
@@ -811,6 +817,11 @@ export const tokens = {
                 })
             })
 
+            // Since autoloader runs on DOMContentLoaded, if any code blocks are added dynamically
+            // after this event (which is not the case here for initial load, but good to be aware),
+            // you would need to call Prism.highlightAll() or Prism.highlightElement() manually.
+            // The outputCodeBlock is handled manually due to its dynamic nature.
+            Prism.highlightAll();
         });
     </script>
 </body>
