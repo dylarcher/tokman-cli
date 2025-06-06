@@ -45,7 +45,6 @@
       "~/*": ["dist/*"]
     },
     "resolveJsonModule": true,
-    "sourceMap": true,
     "strict": true,
     "target": "esnext"
   },
