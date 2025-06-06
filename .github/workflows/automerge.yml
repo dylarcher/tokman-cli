@@ -1,0 +1,62 @@
+jobs:
+  automerge:
+    if: github.actor == 'dependabot[bot]'
+    name: Auto-Merge Dependabot PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (shallow)
+        uses: actions/checkout@v4
+        with:
+          depth: 1
+      - env:
+          ASSIGNEE: "dylarcher"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        name: Auto-approve, merge, or label Dependabot PR
+        run: |
+          echo "Processing PR #${PR_NUMBER} created by ${{ github.actor }}"
+
+          PR_STATE=$(gh pr view $PR_NUMBER --json state -q .state)
+          if [[ "$PR_STATE" != "OPEN" ]]; then
+            echo "PR #${PR_NUMBER} is no longer open (state: $PR_STATE). Skipping."
+            exit 0
+          fi
+
+          echo "Waiting for required status checks on PR #${PR_NUMBER}..."
+          if gh pr checks $PR_NUMBER --watch --required --timeout 600 --interval 30 --fail-fast --exit-status; then
+            echo "All required checks passed for PR #${PR_NUMBER}."
+
+            MERGEABLE_STATE=$(gh pr view $PR_NUMBER --json mergeable -q .mergeable)
+            echo "PR #${PR_NUMBER} current mergeable state: $MERGEABLE_STATE"
+
+            if [[ "$MERGEABLE_STATE" == "MERGEABLE" ]]; then
+              echo "PR #${PR_NUMBER} is mergeable. Approving and enabling auto-merge."
+              gh pr review $PR_NUMBER --approve --body "All required checks passed. Auto-approved by workflow."
+
+              gh pr merge $PR_NUMBER --auto --squash --delete-branch --body "Auto-merged by GitHub Actions workflow."
+              echo "PR #${PR_NUMBER} approved and auto-merge enabled."
+            elif [[ "$MERGEABLE_STATE" == "CONFLICTING" ]]; then
+              echo "PR #${PR_NUMBER} has merge conflicts. Labeling and assigning for manual review."
+              gh pr edit $PR_NUMBER --add-label "ATTN"
+              gh pr edit $PR_NUMBER --add-assignee "$ASSIGNEE"
+              gh issue comment $PR_NUMBER --body "Dependabot PR #${PR_NUMBER} has merge conflicts and requires manual intervention. Assigning to @$ASSIGNEE."
+            else
+              echo "PR #${PR_NUMBER} is not mergeable (State: $MERGEABLE_STATE) even though checks passed. Labeling and assigning."
+              gh pr edit $PR_NUMBER --add-label "ATTN"
+              gh pr edit $PR_NUMBER --add-assignee "$ASSIGNEE"
+              gh issue comment $PR_NUMBER --body "Dependabot PR #${PR_NUMBER} is not mergeable (State: $MERGEABLE_STATE) despite passing required checks. Requires manual review. Assigning to @$ASSIGNEE."
+            fi
+          else
+            echo "Some required checks failed, are still pending, or timed out for PR #${PR_NUMBER}. Labeling and assigning."
+            gh pr edit $PR_NUMBER --add-label "ATTN"
+            gh pr edit $PR_NUMBER --add-assignee "$ASSIGNEE"
+            gh issue comment $PR_NUMBER --body "Dependabot PR #${PR_NUMBER} requires attention due to failing, pending, or timed-out required checks. Assigning to @$ASSIGNEE."
+          fi
+name: Dependabot PR Auto-Merge
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write

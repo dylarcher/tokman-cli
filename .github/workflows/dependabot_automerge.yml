@@ -1,0 +1,79 @@
+name: Dependabot PR Auto-Merge
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: write # To approve, comment on PRs
+  contents: write    # To merge PRs
+  issues: write      # To label PRs and assign users
+
+jobs:
+  automerge:
+    name: Auto-Merge Dependabot PR
+    runs-on: ubuntu-latest
+    # Only run for PRs created by Dependabot
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      # Minimal checkout needed for gh CLI to have repository context.
+      - name: Checkout (shallow)
+        uses: actions/checkout@v4
+        with:
+          depth: 1
+
+      - name: Auto-approve, merge, or label Dependabot PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          ASSIGNEE: "dylarcher" # The GitHub username to assign
+        run: |
+          echo "Processing PR #${PR_NUMBER} created by ${{ github.actor }}"
+
+          # Check if the PR is still open
+          PR_STATE=$(gh pr view $PR_NUMBER --json state -q .state)
+          if [[ "$PR_STATE" != "OPEN" ]]; then
+            echo "PR #${PR_NUMBER} is no longer open (state: $PR_STATE). Skipping."
+            exit 0
+          fi
+
+          # Wait for all *required* status checks to complete and succeed
+          # --watch: waits for checks to complete.
+          # --required: only considers checks that are defined as required in branch protection (if any).
+          # --fail-fast: exits immediately if a check fails (if not using --required, or if a required check fails).
+          # --exit-status: ensures the command exits with non-zero if checks fail or timeout.
+          # Timeout set to 600 seconds (10 minutes), interval 30 seconds.
+          echo "Waiting for required status checks on PR #${PR_NUMBER}..."
+          if gh pr checks $PR_NUMBER --watch --required --timeout 600 --interval 30 --fail-fast --exit-status; then
+            echo "All required checks passed for PR #${PR_NUMBER}."
+
+            # Double-check mergeability after checks (e.g., for new conflicts from other merges)
+            MERGEABLE_STATE=$(gh pr view $PR_NUMBER --json mergeable -q .mergeable)
+            echo "PR #${PR_NUMBER} current mergeable state: $MERGEABLE_STATE"
+
+            if [[ "$MERGEABLE_STATE" == "MERGEABLE" ]]; then
+              echo "PR #${PR_NUMBER} is mergeable. Approving and enabling auto-merge."
+              gh pr review $PR_NUMBER --approve --body "All required checks passed. Auto-approved by workflow."
+
+              # Enable auto-merge (GitHub will merge when all branch protection rules are met)
+              # Using --squash and --delete-branch as these are common for dependabot PRs
+              gh pr merge $PR_NUMBER --auto --squash --delete-branch --body "Auto-merged by GitHub Actions workflow."
+              echo "PR #${PR_NUMBER} approved and auto-merge enabled."
+            elif [[ "$MERGEABLE_STATE" == "CONFLICTING" ]]; then
+              echo "PR #${PR_NUMBER} has merge conflicts. Labeling and assigning for manual review."
+              gh pr edit $PR_NUMBER --add-label "ATTN"
+              gh pr edit $PR_NUMBER --add-assignee "$ASSIGNEE"
+              gh issue comment $PR_NUMBER --body "Dependabot PR #${PR_NUMBER} has merge conflicts and requires manual intervention. Assigning to @$ASSIGNEE."
+            else
+              # Other non-mergeable states (e.g., "UNKNOWN" or due to branch protections not met by this workflow's actions alone)
+              echo "PR #${PR_NUMBER} is not mergeable (State: $MERGEABLE_STATE) even though checks passed. Labeling and assigning."
+              gh pr edit $PR_NUMBER --add-label "ATTN"
+              gh pr edit $PR_NUMBER --add-assignee "$ASSIGNEE"
+              gh issue comment $PR_NUMBER --body "Dependabot PR #${PR_NUMBER} is not mergeable (State: $MERGEABLE_STATE) despite passing required checks. Requires manual review. Assigning to @$ASSIGNEE."
+            fi
+          else
+            echo "Some required checks failed, are still pending, or timed out for PR #${PR_NUMBER}. Labeling and assigning."
+            gh pr edit $PR_NUMBER --add-label "ATTN"
+            gh pr edit $PR_NUMBER --add-assignee "$ASSIGNEE"
+            gh issue comment $PR_NUMBER --body "Dependabot PR #${PR_NUMBER} requires attention due to failing, pending, or timed-out required checks. Assigning to @$ASSIGNEE."
+          fi
