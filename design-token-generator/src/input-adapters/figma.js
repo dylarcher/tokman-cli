@@ -119,7 +119,11 @@ async function fetchFigmaVariables(fileKey, apiToken) {
         description: figmaVar.description || `Figma variable: ${figmaVar.name}`,
         originalValue: rawValue,
         source: `figma:${fileKey}/${varId}`,
-        // extensions: { figmaVariableId: varId, figmaCollectionId: figmaVar.variableCollectionId, figmaModeId: modeIdToUse }
+        extensions: { 
+          figmaVariableId: varId, 
+          figmaCollectionId: figmaVar.variableCollectionId, 
+          figmaModeId: modeIdToUse 
+        }
       }));
     }
     return tokens;
