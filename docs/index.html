@@ -97,6 +97,7 @@
                 <h1 class="text-xl font-bold text-gray-800">Design Token Library Guide</h1>
                 <div class="hidden md:flex items-center space-x-4">
                     <a href="#intro" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Intro</a>
+                    <a href="#cli-usage" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">CLI Usage</a>
                     <a href="#architecture"
                         class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Architecture</a>
                     <a href="#inputs" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">Inputs</a>
@@ -143,6 +144,77 @@
                             <strong>Scalability:</strong> Provides a robust framework that supports product growth
                             without losing visual coherence.</li>
                     </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section X: How to Use Cssman CLI -->
+        <section id="cli-usage" class="mb-24">
+            <h2 class="text-4xl font-bold text-gray-900 text-center mb-4">How to Use Cssman CLI</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 text-center mb-12">Get started quickly with the Cssman Command Line Interface. Follow these steps to install, initialize, and build your design tokens.</p>
+
+            <div class="grid md:grid-cols-1 gap-8 max-w-3xl mx-auto">
+                <div class="card p-8 text-left">
+                    <h3 class="text-2xl font-semibold mb-4">1. Installation</h3>
+                    <p class="text-gray-600 mb-4">Install `cssman-cli` globally or as a project dependency using npm or yarn:</p>
+                    <div class="bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto">
+                        <pre><code class="text-white text-sm"># Using npm
+npm install -g cssman-cli
+
+# Using yarn
+yarn global add cssman-cli
+
+# For local project usage
+npm install --save-dev cssman-cli
+yarn add --dev cssman-cli</code></pre>
+                    </div>
+                </div>
+
+                <div class="card p-8 text-left">
+                    <h3 class="text-2xl font-semibold mb-4">2. Initialize Configuration</h3>
+                    <p class="text-gray-600 mb-4">Generate a configuration file in your project root:</p>
+                    <div class="bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto">
+                        <pre><code class="text-white text-sm">cssman init</code></pre>
+                    </div>
+                    <p class="text-gray-600 mb-4">This creates a `cssman.config.js` file. You'll need to define your style sources in this file. Here's a simple example:</p>
+                    <div class="bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto">
+                        <pre><code class="language-javascript text-white text-sm">// cssman.config.js (example)
+module.exports = {
+  source: ['./styles/tokens.json'], // Path to your token definitions
+  platforms: {
+    css: {
+      transformGroup: 'css',
+      buildPath: 'dist/css/',
+      files: [{
+        destination: 'variables.css',
+        format: 'css/variables'
+      }]
+    },
+    // Add other platforms like scss, js, android, ios etc.
+  }
+};</code></pre>
+                    </div>
+                </div>
+
+                <div class="card p-8 text-left">
+                    <h3 class="text-2xl font-semibold mb-4">3. Build Your Tokens</h3>
+                    <p class="text-gray-600 mb-4">Generate your design tokens based on the configuration:</p>
+                    <div class="bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto">
+                        <pre><code class="text-white text-sm">cssman build</code></pre>
+                    </div>
+                    <p class="text-gray-600">Your generated tokens will typically be placed in the `dist/` directory, or as specified in your configuration.</p>
+                </div>
+
+                <div class="card p-8 text-left">
+                    <h3 class="text-2xl font-semibold mb-4">Other Useful Commands</h3>
+                    <p class="text-gray-600 mb-2"><strong>Clean previous builds:</strong></p>
+                    <div class="bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto">
+                        <pre><code class="text-white text-sm">cssman clean</code></pre>
+                    </div>
+                    <p class="text-gray-600 mb-2"><strong>Get help:</strong></p>
+                    <div class="bg-gray-800 rounded-lg p-4 overflow-x-auto">
+                        <pre><code class="text-white text-sm">cssman --help</code></pre>
+                    </div>
                 </div>
             </div>
         </section>
