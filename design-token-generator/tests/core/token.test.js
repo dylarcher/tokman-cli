@@ -1,4 +1,6 @@
 // tests/core/token.test.js
+const { describe, it } = require('node:test');
+const assert = require('node:assert');
 const { DesignToken, createToken } = require('../../src/core/token');
 
 describe('Core Token Representation', () => {
@@ -12,11 +14,11 @@ describe('Core Token Representation', () => {
         description: 'Primary brand color'
       };
       const token = new DesignToken(tokenData);
-      expect(token.name).toBe(tokenData.name);
-      expect(token.path).toEqual(tokenData.path);
-      expect(token.$value).toBe(tokenData.value);
-      expect(token.$type).toBe(tokenData.type);
-      expect(token.$description).toBe(tokenData.description);
+      assert.strictEqual(token.name, tokenData.name);
+      assert.deepStrictEqual(token.path, tokenData.path);
+      assert.strictEqual(token.$value, tokenData.value);
+      assert.strictEqual(token.$type, tokenData.type);
+      assert.strictEqual(token.$description, tokenData.description);
     });
 
     it('should create a token with all optional properties', () => {
@@ -32,10 +34,10 @@ describe('Core Token Representation', () => {
         aliasOf: 'size.font.base'
       };
       const token = new DesignToken(tokenData);
-      expect(token.originalValue).toBe(tokenData.originalValue);
-      expect(token.source).toBe(tokenData.source);
-      expect(token.extensions).toEqual(tokenData.extensions);
-      expect(token.aliasOf).toBe(tokenData.aliasOf);
+      assert.strictEqual(token.originalValue, tokenData.originalValue);
+      assert.strictEqual(token.source, tokenData.source);
+      assert.deepStrictEqual(token.extensions, tokenData.extensions);
+      assert.strictEqual(token.aliasOf, tokenData.aliasOf);
     });
   });
 
@@ -49,13 +51,13 @@ describe('Core Token Representation', () => {
         description: 'Secondary brand color'
       };
       const token = createToken(tokenData);
-      expect(token).toBeInstanceOf(DesignToken);
-      expect(token.name).toBe(tokenData.name);
+      assert.ok(token instanceof DesignToken);
+      assert.strictEqual(token.name, tokenData.name);
     });
 
     it('should throw an error if required fields are missing', () => {
-      expect(() => createToken({ name: 'test', path: ['test'] })).toThrow('Token name, path, value, and type are required.');
-      expect(() => createToken({ name: 'test', path: ['test'], value: 'val' })).toThrow('Token name, path, value, and type are required.');
+      assert.throws(() => createToken({ name: 'test', path: ['test'] }), /Token name, path, value, and type are required./);
+      assert.throws(() => createToken({ name: 'test', path: ['test'], value: 'val' }), /Token name, path, value, and type are required./);
     });
   });
 });

@@ -4,7 +4,7 @@
   "description": "A Node.js library to generate design tokens from diverse styling sources.",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "c8 node --test"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +13,6 @@
     "axios": "^1.9.0"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "c8": "^7.11.0"
   }
 }

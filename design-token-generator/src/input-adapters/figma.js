@@ -1,5 +1,4 @@
 // src/input-adapters/figma.js
-const axios = require('axios');
 const { createToken } = require('../core/token'); // Adjusted path
 
 const FIGMA_API_BASE_URL = 'https://api.figma.com/v1';
@@ -42,11 +41,15 @@ async function fetchFigmaVariables(fileKey, apiToken) {
   }
 
   try {
-    const response = await axios.get(`${FIGMA_API_BASE_URL}/files/${fileKey}/variables`, {
+    const response = await fetch(`${FIGMA_API_BASE_URL}/files/${fileKey}/variables`, {
       headers: { 'X-Figma-Token': apiToken },
     });
 
-    const figmaVariablesData = response.data.meta;
+    await handleApiError(response, 'Error fetching Figma variables');
+
+    const responseData = await response.json();
+    const figmaVariablesData = responseData.meta;
+
     if (!figmaVariablesData || !figmaVariablesData.variables) {
       console.warn('No variables found in the Figma file or unexpected API response structure.');
       return [];
@@ -128,16 +131,9 @@ async function fetchFigmaVariables(fileKey, apiToken) {
     }
     return tokens;
   } catch (error) {
-    if (error.response) {
-      console.error(`Error fetching Figma variables: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
-      throw new Error(`Figma API request failed with status ${error.response.status}.`);
-    } else if (error.request) {
-      console.error('Error fetching Figma variables: No response received from Figma API.');
-      throw new Error('Figma API request failed: No response received.');
-    } else {
-      console.error('Error setting up Figma API request:', error.message);
-      throw new Error(`Error setting up Figma API request: ${error.message}`);
-    }
+    // Handle network errors or other issues not related to Figma API response status
+    console.error('Error processing Figma API request:', error.message);
+    throw new Error(`Error processing Figma API request: ${error.message}`);
   }
 }
 

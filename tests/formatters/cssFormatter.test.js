@@ -1,24 +1,26 @@
 // tests/formatters/cssFormatter.test.js
+const { describe, it } = require('node:test');
+const assert = require('node:assert');
 const { formatCssValue, formatTokensToCss } = require('../../src/formatters/cssFormatter');
 const InternalToken = require('../../src/core/InternalToken');
 
 describe('cssFormatter', () => {
     describe('formatCssValue', () => {
         it('should format colors from object to hex/rgba', () => {
-            expect(formatCssValue({ r: 255, g: 0, b: 0, a: 1 }, 'color')).toBe('#ff0000');
-            expect(formatCssValue({ r: 0, g: 255, b: 0, a: 0.5 }, 'color')).toBe('rgba(0, 255, 0, 0.5)');
+            assert.strictEqual(formatCssValue({ r: 255, g: 0, b: 0, a: 1 }, 'color'), '#ff0000');
+            assert.strictEqual(formatCssValue({ r: 0, g: 255, b: 0, a: 0.5 }, 'color'), 'rgba(0, 255, 0, 0.5)');
         });
         it('should keep color strings as is', () => {
-            expect(formatCssValue('#ABC', 'color')).toBe('#ABC');
-            expect(formatCssValue('blue', 'color')).toBe('blue');
+            assert.strictEqual(formatCssValue('#ABC', 'color'), '#ABC');
+            assert.strictEqual(formatCssValue('blue', 'color'), 'blue');
         });
         it('should return strings as is (for custom props)', () => {
-            expect(formatCssValue('hello world', 'string')).toBe('hello world');
-            expect(formatCssValue('"already quoted"', 'string')).toBe('"already quoted"');
+            assert.strictEqual(formatCssValue('hello world', 'string'), 'hello world');
+            assert.strictEqual(formatCssValue('"already quoted"', 'string'), '"already quoted"');
         });
         it('should return numbers and dimensions as strings', () => {
-            expect(formatCssValue(16, 'number')).toBe('16');
-            expect(formatCssValue('16px', 'dimension')).toBe('16px');
+            assert.strictEqual(formatCssValue(16, 'number'), '16');
+            assert.strictEqual(formatCssValue('16px', 'dimension'), '16px');
         });
     });
 
@@ -41,7 +43,7 @@ describe('cssFormatter', () => {
   --font-family-heading: Arial Black;
 }
 `;
-            expect(formatTokensToCss(tokens)).toBe(expectedCss);
+            assert.strictEqual(formatTokensToCss(tokens), expectedCss);
         });
 
         it('should generate CSS custom properties with a custom selector', () => {
@@ -57,7 +59,7 @@ describe('cssFormatter', () => {
   --font-family-heading: Arial Black;
 }
 `;
-            expect(formatTokensToCss(tokens, options)).toBe(expectedCss);
+            assert.strictEqual(formatTokensToCss(tokens, options), expectedCss);
         });
 
         it('should handle an empty token array', () => {
@@ -66,7 +68,7 @@ describe('cssFormatter', () => {
 :root {
 }
 `;
-            expect(formatTokensToCss([])).toBe(expectedCss);
+            assert.strictEqual(formatTokensToCss([]), expectedCss);
         });
     });
 });
