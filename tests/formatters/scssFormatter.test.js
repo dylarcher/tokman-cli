@@ -1,24 +1,26 @@
 // tests/formatters/scssFormatter.test.js
+const { describe, it } = require('node:test');
+const assert = require('node:assert');
 const { formatScssValue, formatTokensToScss } = require('../../src/formatters/scssFormatter');
 const InternalToken = require('../../src/core/InternalToken');
 
 describe('scssFormatter', () => {
     describe('formatScssValue', () => {
         it('should format colors from object to hex/rgba', () => {
-            expect(formatScssValue({ r: 255, g: 0, b: 0, a: 1 }, 'color')).toBe('#ff0000');
-            expect(formatScssValue({ r: 0, g: 255, b: 0, a: 0.5 }, 'color')).toBe('rgba(0, 255, 0, 0.5)');
+            assert.strictEqual(formatScssValue({ r: 255, g: 0, b: 0, a: 1 }, 'color'), '#ff0000');
+            assert.strictEqual(formatScssValue({ r: 0, g: 255, b: 0, a: 0.5 }, 'color'), 'rgba(0, 255, 0, 0.5)');
         });
         it('should keep color strings as is', () => {
-            expect(formatScssValue('#ABC', 'color')).toBe('#ABC');
-            expect(formatScssValue('blue', 'color')).toBe('blue');
+            assert.strictEqual(formatScssValue('#ABC', 'color'), '#ABC');
+            assert.strictEqual(formatScssValue('blue', 'color'), 'blue');
         });
         it('should quote strings', () => {
-            expect(formatScssValue('hello world', 'string')).toBe("'hello world'");
-            expect(formatScssValue("it's quoted", 'string')).toBe("'it\\'s quoted'");
+            assert.strictEqual(formatScssValue('hello world', 'string'), "'hello world'");
+            assert.strictEqual(formatScssValue("it's quoted", 'string'), "'it\\'s quoted'");
         });
         it('should return numbers and dimensions as strings', () => {
-            expect(formatScssValue(16, 'number')).toBe('16');
-            expect(formatScssValue('16px', 'dimension')).toBe('16px');
+            assert.strictEqual(formatScssValue(16, 'number'), '16');
+            assert.strictEqual(formatScssValue('16px', 'dimension'), '16px');
         });
     });
 
@@ -42,7 +44,7 @@ describe('scssFormatter', () => {
 \$font-family-heading: '"Arial Black"';
 
 `;
-            expect(formatTokensToScss(tokens)).toBe(expectedScss);
+            assert.strictEqual(formatTokensToScss(tokens), expectedScss);
         });
 
         it('should generate an SCSS map when generateMap is true', () => {
@@ -65,7 +67,7 @@ describe('scssFormatter', () => {
   )
 );
 `;
-            expect(formatTokensToScss(tokens, options)).toBe(expectedScss);
+            assert.strictEqual(formatTokensToScss(tokens, options), expectedScss);
         });
     });
 });

@@ -1,28 +1,29 @@
 // tests/parsers/figmaVariablesParser.test.js
-
+const { describe, it } = require('node:test');
+const assert = require('node:assert');
 const { parseFigmaColor, parseFigmaVariablesResponse } = require('../../src/parsers/figmaVariablesParser');
 
 describe('figmaVariablesParser', () => {
   describe('parseFigmaColor', () => {
     it('should correctly parse a valid Figma color object', () => {
       const figmaColor = { r: 0.2, g: 0.4, b: 0.6, a: 0.8 };
-      expect(parseFigmaColor(figmaColor)).toEqual({ r: 51, g: 102, b: 153, a: 0.8 });
+      assert.deepStrictEqual(parseFigmaColor(figmaColor), { r: 51, g: 102, b: 153, a: 0.8 });
     });
 
     it('should handle black color correctly', () => {
       const figmaColor = { r: 0, g: 0, b: 0, a: 1 };
-      expect(parseFigmaColor(figmaColor)).toEqual({ r: 0, g: 0, b: 0, a: 1 });
+      assert.deepStrictEqual(parseFigmaColor(figmaColor), { r: 0, g: 0, b: 0, a: 1 });
     });
 
     it('should handle white color correctly', () => {
       const figmaColor = { r: 1, g: 1, b: 1, a: 1 };
-      expect(parseFigmaColor(figmaColor)).toEqual({ r: 255, g: 255, b: 255, a: 1 });
+      assert.deepStrictEqual(parseFigmaColor(figmaColor), { r: 255, g: 255, b: 255, a: 1 });
     });
 
     it('should return null for invalid Figma color object', () => {
-      expect(parseFigmaColor({ r: 0.2, g: 0.4, b: 0.6 })).toBeNull(); // Missing alpha
-      expect(parseFigmaColor(null)).toBeNull();
-      expect(parseFigmaColor({})).toBeNull();
+      assert.strictEqual(parseFigmaColor({ r: 0.2, g: 0.4, b: 0.6 }), null); // Missing alpha
+      assert.strictEqual(parseFigmaColor(null), null);
+      assert.strictEqual(parseFigmaColor({}), null);
     });
   });
 
@@ -81,27 +82,27 @@ describe('figmaVariablesParser', () => {
 
     it('should parse a valid Figma API response correctly', () => {
       const parsed = parseFigmaVariablesResponse(mockFigmaApiResponse);
-      expect(parsed).toHaveLength(3);
+      assert.strictEqual(parsed.length, 3);
 
       const colorVar = parsed.find(v => v.id === 'var1');
-      expect(colorVar.name).toBe('colors/primary');
-      expect(colorVar.resolvedType).toBe('COLOR');
-      expect(colorVar.description).toBe('Primary brand color');
-      expect(colorVar.valuesByMode['Light']).toEqual({ r: 255, g: 0, b: 0, a: 1 });
-      expect(colorVar.valuesByMode['Dark']).toEqual({ r: 0, g: 0, b: 255, a: 1 });
-      expect(colorVar.variableCollection.name).toBe('Brand Colors');
-      expect(colorVar.variableCollection.modes).toEqual([{id: 'mode1', name: 'Light'}, {id: 'mode2', name: 'Dark'}]);
+      assert.strictEqual(colorVar.name, 'colors/primary');
+      assert.strictEqual(colorVar.resolvedType, 'COLOR');
+      assert.strictEqual(colorVar.description, 'Primary brand color');
+      assert.deepStrictEqual(colorVar.valuesByMode['Light'], { r: 255, g: 0, b: 0, a: 1 });
+      assert.deepStrictEqual(colorVar.valuesByMode['Dark'], { r: 0, g: 0, b: 255, a: 1 });
+      assert.strictEqual(colorVar.variableCollection.name, 'Brand Colors');
+      assert.deepStrictEqual(colorVar.variableCollection.modes, [{id: 'mode1', name: 'Light'}, {id: 'mode2', name: 'Dark'}]);
 
 
       const spacingVar = parsed.find(v => v.id === 'var2');
-      expect(spacingVar.name).toBe('spacing/small');
-      expect(spacingVar.resolvedType).toBe('FLOAT');
-      expect(spacingVar.valuesByMode['Light']).toBe(8); // Mode name from collection default
+      assert.strictEqual(spacingVar.name, 'spacing/small');
+      assert.strictEqual(spacingVar.resolvedType, 'FLOAT');
+      assert.strictEqual(spacingVar.valuesByMode['Light'], 8); // Mode name from collection default
     });
 
     it('should throw an error for invalid data structure', () => {
-      expect(() => parseFigmaVariablesResponse({})).toThrow('Invalid Figma variables data structure received.');
-      expect(() => parseFigmaVariablesResponse({ meta: {} })).toThrow('Invalid Figma variables data structure received.');
+      assert.throws(() => parseFigmaVariablesResponse({}), /Invalid Figma variables data structure received./);
+      assert.throws(() => parseFigmaVariablesResponse({ meta: {} }), /Invalid Figma variables data structure received./);
     });
   });
 });

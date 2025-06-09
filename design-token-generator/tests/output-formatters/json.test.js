@@ -1,4 +1,6 @@
 // tests/output-formatters/json.test.js
+const { describe, it } = require('node:test');
+const assert = require('node:assert');
 const { formatTokensToJson } = require('../../src/output-formatters/json');
 const { createToken } = require('../../src/core/token');
 
@@ -10,7 +12,7 @@ describe('JSON Output Formatter', () => {
       createToken({ name: 'size-font-small', path: ['size', 'font', 'small'], value: '12px', type: 'dimension', description: 'Small font size' })
     ];
     const jsonOutput = formatTokensToJson(tokens);
-    expect(jsonOutput).toEqual({
+    assert.deepStrictEqual(jsonOutput, {
       color: {
         brand: {
           primary: { $value: '#FF0000', $type: 'color', $description: 'Primary red' },
@@ -30,15 +32,15 @@ describe('JSON Output Formatter', () => {
       createToken({ name: 'color-brand-primary', path: ['color', 'brand', 'primary'], value: '#FF0000', type: 'color', extensions: { category: 'brand' } })
     ];
     const jsonOutput = formatTokensToJson(tokens);
-    expect(jsonOutput.color.brand.primary.extensions).toEqual({ category: 'brand' });
+    assert.deepStrictEqual(jsonOutput.color.brand.primary.extensions, { category: 'brand' });
   });
 
   it('should return an empty object for an empty token array', () => {
-    expect(formatTokensToJson([])).toEqual({});
+    assert.deepStrictEqual(formatTokensToJson([]), {});
   });
 
   it('should throw error for invalid input', () => {
-    expect(() => formatTokensToJson({})).toThrow('Input must be an array of DesignToken objects.');
+    assert.throws(() => formatTokensToJson({}), /Input must be an array of DesignToken objects./);
   });
 
   it('should skip invalid token objects in array', () => {
@@ -47,17 +49,23 @@ describe('JSON Output Formatter', () => {
       createToken({ name: 'color-brand-primary', path: ['color', 'brand', 'primary'], value: '#FF0000', type: 'color' }),
       {path: ['invalid']} // missing other fields
     ];
-    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const jsonOutput = formatTokensToJson(tokens);
 
-    expect(jsonOutput).toEqual({
+    let warnMessages = 0;
+    const originalWarn = console.warn;
+    console.warn = () => {
+      warnMessages++;
+    };
+
+    const jsonOutput = formatTokensToJson(tokens);
+    console.warn = originalWarn; // Restore original console.warn
+
+    assert.deepStrictEqual(jsonOutput, {
         color: {
             brand: {
                 primary: { $value: '#FF0000', $type: 'color' }
             }
         }
     });
-    expect(consoleWarnSpy).toHaveBeenCalledTimes(2); // For null and invalid object
-    consoleWarnSpy.mockRestore();
+    assert.strictEqual(warnMessages, 2); // For null and invalid object
   });
 });
