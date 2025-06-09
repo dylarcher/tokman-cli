@@ -45,11 +45,7 @@ async function fetchFigmaVariables(fileKey, apiToken) {
       headers: { 'X-Figma-Token': apiToken },
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: response.statusText }));
-      console.error(`Error fetching Figma variables: ${response.status} - ${JSON.stringify(errorData)}`);
-      throw new Error(`Figma API request failed with status ${response.status}.`);
-    }
+    await handleApiError(response, 'Error fetching Figma variables');
 
     const responseData = await response.json();
     const figmaVariablesData = responseData.meta;
