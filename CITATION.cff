@@ -10,7 +10,7 @@ version: '0.1.0'
 date-released: '2025-06-06'
 url: 'https://github.com/dylarcher/git.starter-template'
 repository-code: 'https://github.com/dylarcher/git.starter-template'
-abstract: 'A github starter template for creating a new repository with a set of
+abstract: 'A GitHub starter template for creating a new repository with a set of
  predefined structures, documents and configurations.'
 keywords:
   - 'github-template'
