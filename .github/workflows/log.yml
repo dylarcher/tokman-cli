@@ -48,8 +48,13 @@ jobs:
           with open(changelog_path, 'r') as file:
               lines = file.readlines()
           new_entry = f'## [Unreleased] - PR #{os.getenv("PR_NUMBER")}: {os.getenv("PR_TITLE")} - {os.getenv("TODAY")}\n\n### Changes\n\n{os.getenv("COMMIT_HISTORY")}\n\n'
-          lines.insert(8, '\n')  # Insert blank line
-          lines.insert(9, new_entry)  # Insert new changelog entry
+          marker = "## [Unreleased]"
+          try:
+              marker_index = next(i for i, line in enumerate(lines) if line.strip() == marker)
+              lines.insert(marker_index + 1, '\n')  # Insert blank line after marker
+              lines.insert(marker_index + 2, new_entry)  # Insert new changelog entry
+          except StopIteration:
+              raise ValueError(f"Marker '{marker}' not found in {changelog_path}")
           with open(changelog_path, 'w') as file:
               file.writelines(lines)
           "
