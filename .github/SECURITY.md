@@ -20,7 +20,7 @@ vulnerability within this project, please report it to us as soon as possible.
 
 **How to Report:**
 
-To report a security vulnerability, please email us at `dylarcher@zohomail.com`.
+To report a security vulnerability, please email us at `dylarcher@gmail.com`.
 *   Use a clear subject line, e.g., "Security Vulnerability Report: cssman-cli".
 *   Provide a detailed description of the vulnerability, including:
     *   Steps to reproduce the vulnerability.
