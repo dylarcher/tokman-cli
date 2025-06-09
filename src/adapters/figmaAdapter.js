@@ -1,6 +1,5 @@
 // src/adapters/figmaAdapter.js
 
-const axios = require('axios');
 const { config } = require('../config/configManager');
 
 const FIGMA_API_BASE_URL = 'https://api.figma.com/v1';
@@ -25,34 +24,24 @@ async function fetchFigmaVariables(fileKey, apiKey) {
   console.log(`Fetching Figma variables from: ${url}`);
 
   try {
-    const response = await axios.get(url, {
+    const response = await fetch(url, {
       headers: {
         'X-FIGMA-TOKEN': apiKey,
       },
     });
 
-    if (response.status === 200) {
-      console.log('Successfully fetched Figma variables.');
-      return response.data;
-    } else {
-      // This case might not be hit if axios throws for non-2xx status codes by default
-      throw new Error(`Figma API request failed with status ${response.status}: ${response.statusText}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: response.statusText }));
+      console.error('Figma API Error Response:', errorData);
+      throw new Error(`Figma API request failed with status ${response.status}: ${errorData.err || errorData.message || response.statusText}`);
     }
+
+    console.log('Successfully fetched Figma variables.');
+    return await response.json();
   } catch (error) {
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.error('Figma API Error Response:', error.response.data);
-      throw new Error(`Figma API request failed with status ${error.response.status}: ${error.response.data.err || error.response.data.message || error.response.statusText}`);
-    } else if (error.request) {
-      // The request was made but no response was received
-      console.error('Figma API No Response:', error.request);
-      throw new Error('No response received from Figma API. Check network connectivity.');
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.error('Figma API Request Setup Error:', error.message);
-      throw new Error(`Failed to make Figma API request: ${error.message}`);
-    }
+    // Handle network errors or other issues not related to Figma API response status
+    console.error('Figma API Request Processing Error:', error.message);
+    throw new Error(`Failed to process Figma API request: ${error.message}`);
   }
 }
 
@@ -102,29 +91,29 @@ async function fetchFigmaStyles(fileKey, apiKey) {
   console.log(`Fetching Figma styles from: ${url}`);
 
   try {
-    const response = await axios.get(url, {
+    const response = await fetch(url, {
       headers: {
         'X-FIGMA-TOKEN': apiKey,
       },
     });
 
-    if (response.status === 200 && response.data && response.data.meta && response.data.meta.styles) {
-      console.log(`Successfully fetched ${response.data.meta.styles.length} Figma styles.`);
-      return response.data.meta.styles; // Return the array of styles
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: response.statusText }));
+      console.error('Figma API Error Response (Styles):', errorData);
+      throw new Error(`Figma API request for styles failed with status ${response.status}: ${errorData.err || errorData.message || response.statusText}`);
+    }
+
+    const responseData = await response.json();
+    if (responseData && responseData.meta && responseData.meta.styles) {
+      console.log(`Successfully fetched ${responseData.meta.styles.length} Figma styles.`);
+      return responseData.meta.styles; // Return the array of styles
     } else {
-      throw new Error(`Figma API request for styles failed with status ${response.status} or unexpected data structure.`);
+      throw new Error('Figma API request for styles returned unexpected data structure.');
     }
   } catch (error) {
-    if (error.response) {
-      console.error('Figma API Error Response (Styles):', error.response.data);
-      throw new Error(`Figma API request for styles failed with status ${error.response.status}: ${error.response.data.err || error.response.data.message || error.response.statusText}`);
-    } else if (error.request) {
-      console.error('Figma API No Response (Styles):', error.request);
-      throw new Error('No response received from Figma API for styles. Check network connectivity.');
-    } else {
-      console.error('Figma API Request Setup Error (Styles):', error.message);
-      throw new Error(`Failed to make Figma API request for styles: ${error.message}`);
-    }
+    // Handle network errors or other issues
+    console.error('Figma API Request Processing Error (Styles):', error.message);
+    throw new Error(`Failed to process Figma API request for styles: ${error.message}`);
   }
 }
 
@@ -154,29 +143,29 @@ async function fetchFigmaNodes(fileKey, apiKey, nodeIds) {
   // console.log(`Fetching Figma nodes (${nodeIds.length}) from: ${url}`);
 
   try {
-    const response = await axios.get(url, {
+    const response = await fetch(url, {
       headers: {
         'X-FIGMA-TOKEN': apiKey,
       },
     });
 
-    if (response.status === 200 && response.data && response.data.nodes) {
-      // console.log(`Successfully fetched data for ${Object.keys(response.data.nodes).length} Figma nodes.`);
-      return response.data.nodes; // Return the map of nodes
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: response.statusText }));
+      console.error('Figma API Error Response (Nodes):', errorData);
+      throw new Error(`Figma API request for nodes failed with status ${response.status}: ${errorData.err || errorData.message || response.statusText}`);
+    }
+
+    const responseData = await response.json();
+    if (responseData && responseData.nodes) {
+      // console.log(`Successfully fetched data for ${Object.keys(responseData.nodes).length} Figma nodes.`);
+      return responseData.nodes; // Return the map of nodes
     } else {
-      throw new Error(`Figma API request for nodes failed with status ${response.status} or unexpected data structure.`);
+      throw new Error('Figma API request for nodes returned unexpected data structure.');
     }
   } catch (error) {
-    if (error.response) {
-      console.error('Figma API Error Response (Nodes):', error.response.data);
-      throw new Error(`Figma API request for nodes failed with status ${error.response.status}: ${error.response.data.err || error.response.data.message || error.response.statusText}`);
-    } else if (error.request) {
-      console.error('Figma API No Response (Nodes):', error.request);
-      throw new Error('No response received from Figma API for nodes. Check network connectivity.');
-    } else {
-      console.error('Figma API Request Setup Error (Nodes):', error.message);
-      throw new Error(`Failed to make Figma API request for nodes: ${error.message}`);
-    }
+    // Handle network errors or other issues
+    console.error('Figma API Request Processing Error (Nodes):', error.message);
+    throw new Error(`Failed to process Figma API request for nodes: ${error.message}`);
   }
 }
 

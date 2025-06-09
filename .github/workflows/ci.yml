@@ -24,12 +24,14 @@ jobs:
         cache: 'npm' # Or 'yarn' if the project uses Yarn
 
     - name: Install dependencies
-      run: npm install # Or yarn install
+      run: npm install
 
-    # Add linting step if a linter is set up
+    # Optional: Add linting step if a linter is set up
     # - name: Lint
-    #   run: npm run lint # Or your specific lint command
+    #   run: npm run lint
 
-    # Add testing step if tests are set up
-    # - name: Test
-    #   run: npm test # Or your specific test command
+    - name: Run tests and collect coverage
+      run: npm run test # This will run c8 node --test as per package.json
+
+    - name: Report coverage
+      run: npx c8 report --reporter=lcov --reporter=text

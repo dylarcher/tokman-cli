@@ -7,7 +7,7 @@
     "cssman-cli": "src/cli.js"
   },
   "scripts": {
-    "test": "jest",
+    "test": "c8 node --test",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "keywords": [
@@ -33,6 +33,6 @@
     "commander": "14.0.0",
     "css-tree": "3.1.0",
     "eslint": "9.28.0",
-    "jest": "^29.0.0"
+    "c8": "^7.11.0"
   }
 }
