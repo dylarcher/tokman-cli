@@ -42,8 +42,17 @@ jobs:
           TODAY=$(date +"%Y-%m-%d")
           PR_TITLE=$(gh pr view ${{ steps.pr-info.outputs.pr_number }} --json title -q .title)
           NEW_ENTRY="## [Unreleased] - PR #${{ steps.pr-info.outputs.pr_number }}: ${PR_TITLE} - $TODAY\n\n### Changes\n\n${{ steps.generate-commits.outputs.commit_history }}\n\n"
-          sed -i '8i\\' CHANGELOG.md
-          sed -i "9i$NEW_ENTRY" CHANGELOG.md
+          python -c "
+          import os
+          changelog_path = 'CHANGELOG.md'
+          with open(changelog_path, 'r') as file:
+              lines = file.readlines()
+          new_entry = f'## [Unreleased] - PR #{os.getenv("PR_NUMBER")}: {os.getenv("PR_TITLE")} - {os.getenv("TODAY")}\n\n### Changes\n\n{os.getenv("COMMIT_HISTORY")}\n\n'
+          lines.insert(8, '\n')  # Insert blank line
+          lines.insert(9, new_entry)  # Insert new changelog entry
+          with open(changelog_path, 'w') as file:
+              file.writelines(lines)
+          "
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: steps.generate-commits.outputs.commit_count != '0'
