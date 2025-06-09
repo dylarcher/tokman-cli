@@ -2,7 +2,7 @@
 
 Contributions are welcome and greatly appreciated! Whether it's reporting a bug, discussing improvements, or submitting a pull request, every bit of help is valuable.
 
-We expect all contributors to adhere to our [Code of Conduct](CODE_OF_CONDUCT.md).
+We expect all contributors to adhere to our [Code of Conduct](.github/CODE_OF_CONDUCT.md).
 
 ## How to Contribute
 
