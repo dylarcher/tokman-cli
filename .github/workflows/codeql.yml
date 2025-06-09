@@ -40,7 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - build-mode: none
+          - build-mode: incremental
             language: javascript
   scan_and_autofix_main:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
@@ -89,7 +89,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - build-mode: none
+          - build-mode: incremental
             language: javascript
 name: Analyze code with CodeQL
 'on':
