@@ -10,13 +10,13 @@ jobs:
       - name: NodeJS dependency setup
         run: npm ci
       - name: Test project source code
-        run: npm test # This should run 'c8 node --test'
+        run: npm test
       - if: always()
         name: Upload coverage reports
         uses: actions/upload-artifact@v4
         with:
           name: coverage-reports
-          path: test/coverage # This matches .c8rc.json report-dir
+          path: test/coverage
           retention-days: 7
 name: Run test suite
-on: [pull_request]
+'on': [pull_request]

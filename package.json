@@ -2,33 +2,78 @@
   "name": "cssman-cli",
   "version": "0.1.0",
   "description": "A library intended to generate design tokens from a style source",
-  "main": "src/index.js",
-  "bin": {
-    "cssman-cli": "src/cli.js"
+  "author": "Dylan Archer <dylarcher@gmail.com> (@dylarcher)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/USERNAME/cssman-cli.git"
   },
-  "scripts": {
-    "test": "c8 node --test",
-    "lint": "biome lint . && markdownlint --config .github/configs/.markdownlintrc.json \"**/*.md\"",
-    "format": "biome format --write . && markdownlint --config .github/configs/.markdownlint-fix.json --fix \"**/*.md\""
+  "bugs": {
+    "url": "https://github.com/USERNAME/cssman-cli/issues"
   },
+  "homepage": "https://github.com/USERNAME/cssman-cli#readme",
   "keywords": [
     "design-tokens",
     "cli",
     "tokens",
-    "style-management"
+    "style-management",
+    "state",
+    "management",
+    "library",
+    "npm",
+    "javascript"
   ],
-  "author": "",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/USERNAME/REPOSITORY.git"
+  "bin": {
+    "cssman-cli": "src/cli.js"
   },
-  "bugs": {
-    "url": "https://github.com/USERNAME/REPOSITORY/issues"
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "browser": "dist/index.umd.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
+    }
   },
-  "homepage": "https://github.com/USERNAME/REPOSITORY#readme",
+  "type": "module",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "directories": {
+    ".github": ".github",
+    "dist": "dist",
+    "docs": "docs",
+    "node_modules": "node_modules",
+    "src": "src",
+    "test": "test"
+  },
+  "engines": {
+    "node": ">=20.19.2",
+    "npm": ">=10.8.2",
+    "vscode": "1.100.0"
+  },
+  "packageManager": "npm@10.8.2",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "private": false,
+  "scripts": {
+    "build": "node build/script.js",
+    "bundle:types": "echo 'Type declarations bundled by build script'",
+    "clean": "npm run clean:dist && npm run clean:libs",
+    "clean:dist": "npx rimraf dist lib test/coverage .vscode-test types bin",
+    "clean:libs": "npx rimraf node_modules package-lock.json .cache/npm",
+    "format": "npx biome format --write --config-path .github/configs/biome.json src && node build/fix-markdown-lines.js && npx markdownlint-cli --config .github/configs/.markdownlint-fix.json --fix .github/**/*.md ./docs/**/*.md ./src/**/*.md ./README.md ./CHANGELOG.md",
+    "lint": "npx biome lint --write --config-path .github/configs/biome.json src && npx yaml-lint -c .github/configs/yaml-lint.yaml .github/**/*.yml",
+    "test": "c8 --config .github/configs/.c8rc.json node --test test/cli.test.js test/index.test.js"
+  },
   "dependencies": {
-    "axios": "^1.0.0"
+    "axios": "^1.0.0",
+    "yargs": "18.0.0"
   },
   "devDependencies": {
     "commander": "14.0.0",

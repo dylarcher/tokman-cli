@@ -18,13 +18,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: npm
-          node-version: 20.19.2 # User provided 20.19.2, template had 20.x. Sticking to specific.
+          node-version: 20.19.2
       - env:
           NODE_ENV: production
         if: matrix.language == 'javascript'
         name: Project build process (PR)
         run: |
           npm ci --prefer-offline --no-audit
+          npm run build
       - name: Initialize CodeQL (PR)
         uses: github/codeql-action/init@v3
         with:
@@ -39,7 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - build-mode: none
+          - build-mode: incremental
             language: javascript
   scan_and_autofix_main:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
@@ -59,13 +60,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: npm
-          node-version: 20.19.2 # User provided 20.19.2, template had 20.x. Sticking to specific.
+          node-version: 20.19.2
       - env:
           NODE_ENV: production
         if: matrix.language == 'javascript'
         name: Project build process (main)
         run: |
           npm ci --prefer-offline --no-audit
+          npm run build
       - name: Initialize CodeQL (main)
         uses: github/codeql-action/init@v3
         with:
@@ -87,10 +89,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - build-mode: none
+          - build-mode: incremental
             language: javascript
 name: Analyze code with CodeQL
-on:
+'on':
   pull_request:
     branches: [ main, master ]
   push:

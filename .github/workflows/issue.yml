@@ -21,10 +21,8 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         name: Add summary comment to issue
         run: |
-          gh issue comment $ISSUE_NUMBER --body '### 📝 AI Summary
-
-${{ steps.inference.outputs.response }}'
+          gh issue comment $ISSUE_NUMBER --body '### 📝 AI Summary\n\n${{ steps.inference.outputs.response }}'
 name: Summarize new issues using AI
-on:
+'on':
   issues:
     types: [opened]

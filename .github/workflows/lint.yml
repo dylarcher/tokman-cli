@@ -21,4 +21,4 @@ jobs:
           git add -A
           git diff --staged --quiet || (git commit -m "Automated linting fixes" && git push)
 name: Lint code using Biome
-on: [pull_request]
+'on': [pull_request]

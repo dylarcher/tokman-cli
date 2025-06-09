@@ -1,0 +1,105 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "checkJs": true,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "declarationDir": "dist",
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "lib": [
+      "es5",
+      "es6",
+      "es7",
+      "es2015",
+      "es2016",
+      "es2017",
+      "es2018",
+      "es2019",
+      "es2020",
+      "es2021",
+      "es2022",
+      "es2023",
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "dom.asynciterable"
+    ],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "incremental": true,
+    "inlineSourceMap": true,
+    "noEmit": false,
+    "outDir": "dist",
+    "paths": {
+      "#/*": [
+        "test/*"
+      ],
+      "@/*": [
+        "src/*"
+      ],
+      "bin/*": [
+        "src/bin/*"
+      ],
+      "conf/*": [
+        "git/configs/*"
+      ],
+      "docs/*": [
+        "docs/*"
+      ],
+      "git/*": [
+        ".github/*"
+      ],
+      "log/*": [
+        "logs/*",
+        "reports/*",
+        "coverage/*",
+        "#/coverage/*"
+      ],
+      "src/*": [
+        "src/*"
+      ],
+      "test/*": [
+        "test/*"
+      ],
+      "~/*": [
+        "dist/*"
+      ]
+    },
+    "resolveJsonModule": true,
+    "rootDirs": [
+      "src",
+      "dist"
+    ],
+    "strict": true,
+    "target": "esnext"
+  },
+  "exclude": [
+    "release",
+    "dist",
+    "test",
+    "lib",
+    "node_modules",
+    "out"
+  ],
+  "include": [
+    "src",
+    "docs"
+  ],
+  "typeAcquisition": {
+    "enable": true,
+    "include": [
+      "@types/node",
+      "@types/vscode",
+      "c8/experimental",
+      "c8/globals"
+    ]
+  }
+}
